@@ -1,3 +1,3 @@
 # e-coin
-BlockChain Implementation with Java
-p2p implementation outstanding
+BlockChain Implementation with Java.
+P2P implementation outstanding.
