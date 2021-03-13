@@ -1,10 +1,14 @@
 package com.company.Model;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.sql.*;
+import java.util.ArrayList;
 
 public class WalletData {
 
@@ -13,6 +17,13 @@ public class WalletData {
     private static WalletData instance;
     static {
         instance = new WalletData();
+    }
+    //todo:Make sure this displays correct balance.
+    public ObservableList<String> getWalletBalanceFX() {
+        ArrayList<String> balance = new ArrayList<>();
+        balance.add("Balance:");
+        balance.add(wallet.getBalance().toString());
+        return FXCollections.observableArrayList(balance);
     }
     public static WalletData getInstance(){
         return instance;

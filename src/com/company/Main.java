@@ -12,20 +12,18 @@ public class Main {
 
     public static void main(String[] args) throws GeneralSecurityException {
 
-        Wallet wallet1 = new Wallet(2048);
-        Wallet wallet2 = new Wallet(2048);
+        Wallet wallet1 = new Wallet();
+        Wallet wallet2 = new Wallet();
         Block firstBlock = new Block(new byte[0]);
 
         LinkedList<Block> blockChain = new LinkedList<>();
         System.out.println(wallet1.getBalance(firstBlock.getCurrentBlockChain()));
-//        Transaction transaction1 = new Transaction(wallet1,wallet2.getPublicKey().getEncoded(),100);
-//        firstBlock.addTransaction(transaction1);
         Block secondBlock = new Block(firstBlock.finalizeBlock(wallet1));
-        Transaction transaction1 = new Transaction(wallet1,wallet2.getPublicKey().getEncoded(),50);
+        Transaction transaction1 = new Transaction(wallet1,wallet2.getPublicKey().getEncoded(),99);
         secondBlock.addTransaction(transaction1);
-        System.out.println(wallet1.getBalance(secondBlock.getCurrentBlockChain()));
+        System.out.println(wallet1.getBalance(wallet1.getBalance(secondBlock.getCurrentBlockChain()),secondBlock.getTransactionLedger()));
         Block thirdBlock = new Block(secondBlock.finalizeBlock(wallet1));
-        System.out.println(wallet1.getBalance(secondBlock.getCurrentBlockChain()));
+        System.out.println(wallet1.getBalance(wallet1.getBalance(thirdBlock.getCurrentBlockChain()),thirdBlock.getTransactionLedger()));
         thirdBlock.finalizeBlock(wallet1);
         for (Block b : thirdBlock.getCurrentBlockChain()) {
             System.out.println(b.toString());
