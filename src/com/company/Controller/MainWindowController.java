@@ -1,14 +1,14 @@
 package com.company.Controller;
 
-import com.company.Model.BlockChainData;
+import com.company.Model.BlockData;
+import com.company.Model.Transaction;
+import com.company.Model.WalletData;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 
 import java.io.IOException;
@@ -19,43 +19,46 @@ public class MainWindowController {
     @FXML
     public TableView tableview = new TableView(); //this is read-only UI table refer to ContactData table for editing
     @FXML
-    private TableColumn firstName;
+    private TableColumn from;
     @FXML
-    private TableColumn secondName;
+    private TableColumn to;
     @FXML
-    private TableColumn phoneNumber;
+    private TableColumn value;
     @FXML
-    private TableColumn notes;
+    private TableColumn signature;
     @FXML
     private BorderPane borderPane;
     @FXML
-
     public static int index;
-//    private MenuItem addContact;
+    @FXML
+    public TableView tableECoins = new TableView();;
+    @FXML
+    private ListView eCoins ;
 
 
     public void initialize() {
+    //todo:get this to work
+        from.setCellValueFactory(
+                new PropertyValueFactory<Transaction, String>("from"));
+        to.setCellValueFactory(
+                new PropertyValueFactory<Transaction, String>("to"));
+        value.setCellValueFactory(
+                new PropertyValueFactory<Transaction, Integer>("value"));
+        signature.setCellValueFactory(
+                new PropertyValueFactory<Transaction, String>("signature"));
+        eCoins.setItems(WalletData.getInstance().getWalletBalanceFX());
 
-//        firstName.setCellValueFactory(
-//                new PropertyValueFactory<Transaction, String>("from"));
-//        secondName.setCellValueFactory(
-//                new PropertyValueFactory<Transaction, String>("to"));
-//        phoneNumber.setCellValueFactory(
-//                new PropertyValueFactory<Transaction, String>("value"));
-//        notes.setCellValueFactory(
-//                new PropertyValueFactory<Transaction, String>("signature"));
-//
 //        tableview.setItems(contacts);
 //       ContactData.getInstance().setContacts(contacts);
-
-        tableview.setItems(BlockChainData.getInstance().getTransactionLedger());
+//        tableECoins.getColumns().setAll(WalletData.getInstance().getWalletBalance());
+        tableview.setItems(BlockData.getInstance().getTransactionLedger());
         tableview.getSelectionModel().select(0);
 
     }
 
     // Da sozdade dialog pane za kreiranje nov kontakt
     @FXML
-    public void toNewContactController() {
+    public void toNewTransactionController() {
         Dialog<ButtonType> newContactController = new Dialog<>();
         newContactController.initOwner(borderPane.getScene().getWindow());
         FXMLLoader fxmlLoader = new FXMLLoader();

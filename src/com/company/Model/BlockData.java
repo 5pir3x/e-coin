@@ -7,24 +7,24 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class BlockChainData {
+public class BlockData {
 
     private ObservableList<Block> currentBlockChain;
     //singleton class
-    private static BlockChainData instance;
+    private static BlockData instance;
     static {
         try {
-            instance = new BlockChainData();
+            instance = new BlockData();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
     }
 
-    public BlockChainData() throws NoSuchAlgorithmException {
+    public BlockData() throws NoSuchAlgorithmException {
         currentBlockChain = FXCollections.observableArrayList();
     }
 
-    public static BlockChainData getInstance(){
+    public static BlockData getInstance(){
         return instance;
     }
     public ObservableList<Transaction> getTransactionLedger() {

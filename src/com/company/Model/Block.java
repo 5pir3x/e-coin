@@ -3,10 +3,7 @@ package com.company.Model;
 import sun.security.provider.DSAPublicKeyImpl;
 
 import java.io.Serializable;
-import java.security.GeneralSecurityException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
-import java.security.Signature;
+import java.security.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,7 +44,14 @@ public class Block implements Serializable {
         this.transactionLedger = transactionLedger;
     }
 
-    public void addTransaction(Transaction transaction) {
+    public void addTransaction(Transaction transaction) throws GeneralSecurityException {
+        transactionLedger.add(transaction);
+       if (getBalance(currentBlockChain,transactionLedger,new DSAPublicKeyImpl(transaction.getFrom())) < 0) {
+           transactionLedger.remove(transaction);
+           throw new GeneralSecurityException("Not enough funds to record transaction");
+       }
+    }
+    private void addBlockRewardTransaction(Transaction transaction) throws GeneralSecurityException {
         transactionLedger.add(transaction);
     }
 
@@ -62,7 +66,7 @@ public class Block implements Serializable {
         }
         //Reward transaction
         Transaction transaction = new Transaction(blockRewardWallet.getPublicKey().getEncoded(),minersWallet.getPublicKey().getEncoded(),100,blockRewardWallet.getPrivateKey());
-        addTransaction(transaction);
+        addBlockRewardTransaction(transaction);
         this.currHash = (Arrays.toString(currHash) + Arrays.toString(transaction.getSignature())).getBytes();
         signing.initSign(minersWallet.getPrivateKey());
         signing.update(currHash);

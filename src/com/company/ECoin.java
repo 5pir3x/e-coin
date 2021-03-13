@@ -1,6 +1,6 @@
 package com.company;
 
-import com.company.Model.BlockChainData;
+import com.company.Model.BlockData;
 import com.company.Model.Wallet;
 import com.company.Model.WalletData;
 import javafx.application.Application;
@@ -22,7 +22,7 @@ public static void main(String[]args){ launch(args); }
 public void start(Stage primaryStage) throws IOException, SQLException {
         Parent root = FXMLLoader.load(getClass().getResource("View/MainWindow.fxml"));
         primaryStage.setTitle("E-Coin");
-        primaryStage.setScene(new Scene(root, 600, 400));
+        primaryStage.setScene(new Scene(root, 700, 600));
         primaryStage.show();
 
         }
@@ -35,21 +35,21 @@ public void start(Stage primaryStage) throws IOException, SQLException {
                         Statement stmt = connection.createStatement();
                         stmt.executeUpdate("CREATE TABLE IF NOT EXISTS BLOCKCHAIN ( " +
                                 " ID INTEGER NOT NULL UNIQUE, " +
-                                " PREVIOUS_HASH TEXT UNIQUE, " +
-                                " CURRENT_HASH TEXT UNIQUE, " +
+                                " PREVIOUS_HASH BLOB UNIQUE, " +
+                                " CURRENT_HASH BLOB UNIQUE, " +
                                 " LEDGER_ID INTEGER NOT NULL UNIQUE, " +
                                 " CREATED_ON  TEXT, " +
-                                " CREATED_BY  TEXT, " +
+                                " CREATED_BY  BLOB, " +
                                 " PRIMARY KEY( ID AUTOINCREMENT) " +
                                 ")"
                         );
                         stmt.executeUpdate("CREATE TABLE IF NOT EXISTS TRANSACTIONS ( " +
                                 " ID INTEGER NOT NULL UNIQUE, " +
-                                " \"FROM\" TEXT, " +
-                                " \"TO\" TEXT, " +
+                                " \"FROM\" BLOB, " +
+                                " \"TO\" BLOB, " +
                                 " LEDGER_ID INTEGER, " +
                                 " VALUE INTEGER, " +
-                                " SIGNATURE TEXT, " +
+                                " SIGNATURE BLOB, " +
                                 " PRIMARY KEY(ID AUTOINCREMENT) " +
                                 ")"
                         );
@@ -83,8 +83,8 @@ public void start(Stage primaryStage) throws IOException, SQLException {
                 } catch (SQLException | NoSuchAlgorithmException e) {
                 System.out.println("db failed: " + e.getMessage());
                 }
-                //                ContactData.getInstance().loadContacts();
-                BlockChainData.getInstance().loadBlockChain();
+//                                ContactData.getInstance().loadContacts();
+                BlockData.getInstance().loadBlockChain();
                 WalletData.getInstance().loadWallet();
         }
 
