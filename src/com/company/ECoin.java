@@ -30,6 +30,7 @@ public void start(Stage primaryStage) throws IOException, SQLException {
         @Override
         public void init() throws NoSuchAlgorithmException, SQLException, InvalidKeySpecException {
                 try {
+                        //todo:Create the appropriate columns in BLOB type.
                         Connection connection = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\ecointest2.db");
                         Statement stmt = connection.createStatement();
                         stmt.executeUpdate("CREATE TABLE IF NOT EXISTS BLOCKCHAIN ( " +
@@ -68,7 +69,7 @@ public void start(Stage primaryStage) throws IOException, SQLException {
                                 Wallet newWallet = new Wallet();
                                 byte[] pubBlob = newWallet.getPublicKey().getEncoded();
                                 byte[] prvBlob = newWallet.getPrivateKey().getEncoded();
-                                PreparedStatement pstmt = connection.prepareStatement("INSERT INTO WALLET(PRIVATE_KEY, PUBLIC_KEY) " +
+                                PreparedStatement pstmt = walletConnection.prepareStatement("INSERT INTO WALLET(PRIVATE_KEY, PUBLIC_KEY) " +
                                         " VALUES (?,?) ");
                                 pstmt.setBytes(1,prvBlob);
                                 pstmt.setBytes(2,pubBlob);
