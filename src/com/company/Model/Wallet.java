@@ -13,11 +13,17 @@ public class Wallet implements Serializable {
 
     KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("DSA");
 
+    public Wallet() throws NoSuchAlgorithmException {
+        this(2048);
+    }
+
     public Wallet(Integer keySize) throws NoSuchAlgorithmException {
        keyPairGen.initialize(keySize);
        this.keyPair = keyPairGen.generateKeyPair();
        this.walletAddress = keyPair.getPublic();
+
     }
+    //Constructor for Block wallet.
     public Wallet(Integer keySize,Integer blockBalance) throws NoSuchAlgorithmException {
      this(keySize);
         Integer balance = 100;

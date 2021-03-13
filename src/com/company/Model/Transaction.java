@@ -17,8 +17,15 @@ public class Transaction implements Serializable {
    //helper class.
    private Signature signing = Signature.getInstance("SHA256withDSA");
 
+   //Constructor for loading with existing signature
+   public Transaction(byte[] from, byte[] to, Integer value, byte[] signature) throws NoSuchAlgorithmException {
+      this.from = from;
+      this.to = to;
+      this.value = value;
+      this.signature = signature;
+   }
 
-
+   // Constructors for creating signature
    public Transaction(byte[] from, byte[] to, Integer value, PrivateKey privateKey) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
       this.from = from;
       this.to = to;

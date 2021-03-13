@@ -3,7 +3,10 @@ package com.company.Model;
 import sun.security.provider.DSAPublicKeyImpl;
 
 import java.io.Serializable;
-import java.security.*;
+import java.security.GeneralSecurityException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.Signature;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,11 +14,13 @@ import java.util.LinkedList;
 
 public class Block implements Serializable {
 
+
     private LinkedList<Block> currentBlockChain = new LinkedList<>();
     private byte[] prevHash;
     private byte[] currHash;
+    private Integer ledgerId;
     private ArrayList<Transaction> transactionLedger = new ArrayList<>();
-    private LocalDateTime timeStamp;
+    private String timeStamp;
     private byte[] minedBy;
     private Wallet blockRewardWallet  = new Wallet(2048,100);
     //helper class.
@@ -32,6 +37,14 @@ public class Block implements Serializable {
         verifyBlockChain(currentBlockChain);
         this.currentBlockChain = currentBlockChain;
         this.prevHash = currentBlockChain.getLast().getCurrHash();
+    }
+
+    public Block(byte[] prevHash, byte[] currHash, String timeStamp, byte[] minedBy,ArrayList<Transaction> transactionLedger) throws NoSuchAlgorithmException {
+        this.prevHash = prevHash;
+        this.currHash = currHash;
+        this.timeStamp = timeStamp;
+        this.minedBy = minedBy;
+        this.transactionLedger = transactionLedger;
     }
 
     public void addTransaction(Transaction transaction) {
@@ -54,7 +67,7 @@ public class Block implements Serializable {
         signing.initSign(minersWallet.getPrivateKey());
         signing.update(currHash);
         currHash = signing.sign();
-        this.timeStamp = LocalDateTime.now();
+        this.timeStamp = LocalDateTime.now().toString();
         minedBy = minersWallet.getPublicKey().getEncoded();
         currentBlockChain.add(this);
         return currentBlockChain;
@@ -67,11 +80,11 @@ public class Block implements Serializable {
 
     public ArrayList<Transaction> getTransactionLedger() { return transactionLedger; }
 
-    public LocalDateTime getTimeStamp() { return timeStamp; }
+    public String getTimeStamp() { return timeStamp; }
 
     public byte[] getMinedBy() { return minedBy; }
 
-    public void verifyBlockChain (LinkedList<Block> currentBlockChain) throws GeneralSecurityException {
+    public boolean verifyBlockChain (LinkedList<Block> currentBlockChain) throws GeneralSecurityException {
         for (Block block : currentBlockChain) {
             for (Transaction transaction : block.getTransactionLedger()) {
                 if (!transaction.isVerified(transaction, new DSAPublicKeyImpl(transaction.getFrom()))) {
@@ -79,6 +92,7 @@ public class Block implements Serializable {
                 }
             }
         }
+        return true;
     }
     public Integer getBalance(LinkedList<Block> blockChain, PublicKey walletAddress) {
         Integer balance = 0;
@@ -97,14 +111,7 @@ public class Block implements Serializable {
     public Integer getBalance(LinkedList<Block> blockChain, ArrayList<Transaction> currentLedger, PublicKey walletAddress) {
         Integer balance = 0;
         for (Block block : blockChain) {
-            for ( Transaction transaction : block.getTransactionLedger()) {
-                if (Arrays.equals(transaction.getFrom(), walletAddress.getEncoded())) {
-                    balance -= transaction.getValue();
-                } else if (Arrays.equals(transaction.getTo(), walletAddress.getEncoded())) {
-                    balance += transaction.getValue();
-                }
-            }
-            for ( Transaction transaction : currentLedger) {
+            for (Transaction transaction : block.getTransactionLedger()) {
                 if (Arrays.equals(transaction.getFrom(), walletAddress.getEncoded())) {
                     balance -= transaction.getValue();
                 } else if (Arrays.equals(transaction.getTo(), walletAddress.getEncoded())) {
@@ -112,6 +119,14 @@ public class Block implements Serializable {
                 }
             }
         }
+            for ( Transaction transaction : currentLedger) {
+                if (Arrays.equals(transaction.getFrom(), walletAddress.getEncoded())) {
+                    balance -= transaction.getValue();
+                } else if (Arrays.equals(transaction.getTo(), walletAddress.getEncoded())) {
+                    balance += transaction.getValue();
+                }
+            }
+
         return balance;
     }
     @Override

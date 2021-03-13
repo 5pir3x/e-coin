@@ -2,7 +2,7 @@
 <project version="4">
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="e-coin" options="--add-exports java.base/sun.security=ALL-UNNAMED --add-exports java.base/sun.security.provider=ALL-UNNAMED" />
+      <module name="e-coin" options="--add-exports java.base/sun.security=ALL-UNNAMED --add-exports java.base/sun.security.provider=ALL-UNNAMED --add-exports java.base/sun.security.pkcs=ALL-UNNAMED --add-exports java.base/sun.security.util=ALL-UNNAMED --add-exports java.base/sun.security.x509=ALL-UNNAMED" />
     </option>
   </component>
 </project>
