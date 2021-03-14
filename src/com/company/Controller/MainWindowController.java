@@ -12,6 +12,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.Optional;
 
 public class MainWindowController {
@@ -56,25 +58,25 @@ public class MainWindowController {
 
     }
 
-    // Da sozdade dialog pane za kreiranje nov kontakt
     @FXML
-    public void toNewTransactionController() {
-        Dialog<ButtonType> newContactController = new Dialog<>();
-        newContactController.initOwner(borderPane.getScene().getWindow());
+    public void toNewTransactionController() throws URISyntaxException, MalformedURLException {
+        Dialog<ButtonType> newTransactionController = new Dialog<>();
+        newTransactionController.initOwner(borderPane.getScene().getWindow());
         FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(getClass().getResource("AddNewContactWindow.fxml"));
+        fxmlLoader.setLocation(getClass().getResource("../View/AddNewTransactionWindow.fxml"));
         try {
-//            Parent root = FXMLLoader.load(getClass().getResource("AddNewContactWindow.fxml"));
-            newContactController.getDialogPane().setContent(fxmlLoader.load());
+            newTransactionController.getDialogPane().setContent(fxmlLoader.load());
+//            FileInputStream fileInputStream = new FileInputStream(new File("C:\\Users\\spiro\\IdeaProjects\\e-coin\\src\\com\\company\\View\\AddNewTransactionWindow.fxml"));
+//            newTransactionController.getDialogPane().setContent(fxmlLoader.load(fileInputStream));
         } catch (IOException e) {
             System.out.println("Cant load dialog");
             e.printStackTrace();
             return;
         }
-        newContactController.getDialogPane().getButtonTypes().add(ButtonType.OK);
-        newContactController.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
+        newTransactionController.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        newTransactionController.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
 
-        Optional<ButtonType> result = newContactController.showAndWait();
+        Optional<ButtonType> result = newTransactionController.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             System.out.println("Ok pressed");
         }
