@@ -4,22 +4,24 @@ import com.company.Model.BlockData;
 import com.company.Model.Transaction;
 import com.company.Model.WalletData;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Optional;
 
 public class MainWindowController {
 
     @FXML
-    public TableView tableview = new TableView(); //this is read-only UI table refer to ContactData table for editing
+    public TableView tableview = new TableView(); //this is read-only UI table
     @FXML
     private TableColumn from;
     @FXML
@@ -33,13 +35,12 @@ public class MainWindowController {
     @FXML
     public static int index;
     @FXML
-    public TableView tableECoins = new TableView();;
+    private TextField eCoins ;
     @FXML
-    private ListView eCoins ;
+    private TextArea publicKey;
 
+    public void initialize() throws NoSuchAlgorithmException, SQLException, InvalidKeySpecException {
 
-    public void initialize() {
-    //todo:get this to work
         from.setCellValueFactory(
                 new PropertyValueFactory<Transaction, String>("from"));
         to.setCellValueFactory(
@@ -48,26 +49,25 @@ public class MainWindowController {
                 new PropertyValueFactory<Transaction, Integer>("value"));
         signature.setCellValueFactory(
                 new PropertyValueFactory<Transaction, String>("signature"));
-        eCoins.setItems(WalletData.getInstance().getWalletBalanceFX());
+//        eCoins.setItems(WalletData.getInstance().getWalletBalanceFX());
 
-//        tableview.setItems(contacts);
-//       ContactData.getInstance().setContacts(contacts);
-//        tableECoins.getColumns().setAll(WalletData.getInstance().getWalletBalance());
+        WalletData walletData = WalletData.getInstance();
+        eCoins.setText(walletData.getWalletBalanceFX());
+        publicKey.setText(Arrays.toString(walletData.getWallet().getPublicKey().getEncoded()));
+        ObservableList<Transaction> tl = BlockData.getInstance().getTransactionLedger();
         tableview.setItems(BlockData.getInstance().getTransactionLedger());
         tableview.getSelectionModel().select(0);
 
     }
 
     @FXML
-    public void toNewTransactionController() throws URISyntaxException, MalformedURLException {
+    public void toNewTransactionController() {
         Dialog<ButtonType> newTransactionController = new Dialog<>();
         newTransactionController.initOwner(borderPane.getScene().getWindow());
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("../View/AddNewTransactionWindow.fxml"));
         try {
             newTransactionController.getDialogPane().setContent(fxmlLoader.load());
-//            FileInputStream fileInputStream = new FileInputStream(new File("C:\\Users\\spiro\\IdeaProjects\\e-coin\\src\\com\\company\\View\\AddNewTransactionWindow.fxml"));
-//            newTransactionController.getDialogPane().setContent(fxmlLoader.load(fileInputStream));
         } catch (IOException e) {
             System.out.println("Cant load dialog");
             e.printStackTrace();
@@ -81,32 +81,35 @@ public class MainWindowController {
             System.out.println("Ok pressed");
         }
     }
-
-
-
     @FXML
-    public void editSelectedItem() {
-        index = tableview.getSelectionModel().getSelectedIndex();
-        Dialog<ButtonType> newContactController = new Dialog<>();
-        newContactController.initOwner(borderPane.getScene().getWindow());
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(getClass().getResource("EditNewContactWindow.fxml"));
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("AddNewContactWindow.fxml"));
-            newContactController.getDialogPane().setContent(fxmlLoader.load());
-        } catch (IOException e) {
-            System.out.println("Cant load dialog");
-            e.printStackTrace();
-            return;
-        }
-        newContactController.getDialogPane().getButtonTypes().add(ButtonType.OK);
-        newContactController.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
-
-        newContactController.showAndWait();
-
-
-
+    public void mineBlock() {
+        BlockData.getInstance().mineBlock();
     }
+
+
+//    @FXML
+//    public void editSelectedItem() {
+//        index = tableview.getSelectionModel().getSelectedIndex();
+//        Dialog<ButtonType> newContactController = new Dialog<>();
+//        newContactController.initOwner(borderPane.getScene().getWindow());
+//        FXMLLoader fxmlLoader = new FXMLLoader();
+//        fxmlLoader.setLocation(getClass().getResource("EditNewContactWindow.fxml"));
+//        try {
+//            Parent root = FXMLLoader.load(getClass().getResource("AddNewContactWindow.fxml"));
+//            newContactController.getDialogPane().setContent(fxmlLoader.load());
+//        } catch (IOException e) {
+//            System.out.println("Cant load dialog");
+//            e.printStackTrace();
+//            return;
+//        }
+//        newContactController.getDialogPane().getButtonTypes().add(ButtonType.OK);
+//        newContactController.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
+//
+//        newContactController.showAndWait();
+//
+//
+//
+//    }
     @FXML
     public void deleteSelectedItem() {
         int index = tableview.getSelectionModel().getSelectedIndex();

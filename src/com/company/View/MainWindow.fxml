@@ -2,22 +2,25 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ButtonBar?>
-<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="486.0" prefWidth="653.0" xmlns="http://javafx.com/javafx/10.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.company.Controller.MainWindowController">
+<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.company.Controller.MainWindowController">
     <top>
         <MenuBar BorderPane.alignment="CENTER">
             <menus>
                 <Menu mnemonicParsing="false" text="Menu">
                     <items>
                         <MenuItem mnemonicParsing="false" onAction="#toNewTransactionController" text="Make Transaction" />
-                        <MenuItem mnemonicParsing="false" onAction="#editSelectedItem" text="Edit Contact" />
+<!--                        <MenuItem mnemonicParsing="false" onAction="#editSelectedItem" text="Edit Contact" />-->
                         <MenuItem id="deleteButton" mnemonicParsing="false" onAction="#deleteSelectedItem" text="Delete Contact" />
                         <MenuItem mnemonicParsing="false" onAction="#handleExit" text="Exit" />
                     </items>
@@ -26,32 +29,45 @@
         </MenuBar>
     </top>
     <center>
-        <TableView fx:id="tableview" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <TableView fx:id="tableview" prefHeight="200.0" prefWidth="650.0" BorderPane.alignment="CENTER">
             <columns>
             <TableColumn prefWidth="75.0" text="Current Transactions">
                <columns>
-                      <TableColumn fx:id="from" maxWidth="150.0" prefWidth="150" text="From" />
-                      <TableColumn fx:id="to" prefWidth="150" text="To" />
-                      <TableColumn fx:id="value" prefWidth="150" text="Value" />
-                      <TableColumn fx:id="signature" prefWidth="150" text="Signature" />
+                      <TableColumn fx:id="from" prefWidth="160" text="From" />
+                      <TableColumn fx:id="to" prefWidth="160" text="To" />
+                      <TableColumn fx:id="value" prefWidth="160" text="Value" />
+                      <TableColumn fx:id="signature" prefWidth="160" text="Signature" />
                </columns>
             </TableColumn>
             </columns>
         </TableView>
     </center>
    <bottom>
-      <BorderPane prefHeight="51.0" prefWidth="653.0">
-         <left>
-                <ListView fx:id="eCoins" minWidth="0.0" prefHeight="86.0" prefWidth="95.0" />
-         </left>
+      <BorderPane prefHeight="69.0" prefWidth="650.0">
          <right>
             <ButtonBar prefHeight="50.0" prefWidth="245.0" BorderPane.alignment="CENTER">
               <buttons>
                 <Button mnemonicParsing="false" text="Generate KeyPair" />
-                <Button mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT" prefHeight="21.0" prefWidth="53.0" text="Mine!" textAlignment="CENTER" />
+                <Button mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT" onAction="#mineBlock" prefHeight="21.0" prefWidth="53.0" text="Mine!" textAlignment="CENTER" />
               </buttons>
             </ButtonBar>
          </right>
+         <center>
+            <AnchorPane prefHeight="83.0" prefWidth="269.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label layoutY="4.0" prefHeight="17.0" prefWidth="149.0" text="Your Address / Public Key:" />
+                  <TextArea fx:id="publicKey" editable="false" layoutY="23.0" prefHeight="42.0" prefWidth="269.0" />
+               </children>
+            </AnchorPane>
+         </center>
+         <left>
+            <AnchorPane prefHeight="56.0" prefWidth="136.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label layoutX="6.0" layoutY="6.0" prefHeight="17.0" prefWidth="84.0" text="Your Balance:" />
+                  <TextField fx:id="eCoins" editable="false" layoutX="6.0" layoutY="23.0" prefHeight="25.0" prefWidth="125.0" />
+               </children>
+            </AnchorPane>
+         </left>
       </BorderPane>
    </bottom>
 </BorderPane>

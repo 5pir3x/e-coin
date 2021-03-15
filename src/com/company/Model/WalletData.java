@@ -1,14 +1,13 @@
 package com.company.Model;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
-import java.security.*;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.sql.*;
-import java.util.ArrayList;
 
 public class WalletData {
 
@@ -19,18 +18,14 @@ public class WalletData {
         instance = new WalletData();
     }
     //todo:Make sure this displays correct balance.
-    public ObservableList<String> getWalletBalanceFX() {
-        ArrayList<String> balance = new ArrayList<>();
-        balance.add("Balance:");
-        balance.add(wallet.getBalance().toString());
-        return FXCollections.observableArrayList(balance);
+    public String getWalletBalanceFX() {
+        return wallet.getBalance().toString();
     }
     public static WalletData getInstance(){
         return instance;
     }
+    //This will load your wallet from the database.
     public void loadWallet() throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException {
-        //This creates your wallet if there is none
-        //We will create it in separate db for better security and ease of portability.
         Connection walletConnection = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\wallet.db");
         Statement walletStatment = walletConnection.createStatement();
         ResultSet resultSet;
@@ -46,4 +41,5 @@ public class WalletData {
         }
         this.wallet = new Wallet(pub2,prv2);
     }
+    public Wallet getWallet() { return wallet; }
 }

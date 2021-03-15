@@ -14,15 +14,17 @@ public class Transaction implements Serializable {
    private Integer value;
    //encrypted with my private key
    private byte[] signature;
+   private Integer ledgerId;
    //helper class.
    private Signature signing = Signature.getInstance("SHA256withDSA");
 
    //Constructor for loading with existing signature
-   public Transaction(byte[] from, byte[] to, Integer value, byte[] signature) throws NoSuchAlgorithmException {
+   public Transaction(byte[] from, byte[] to, Integer value, byte[] signature, Integer ledgerId) throws NoSuchAlgorithmException {
       this.from = from;
       this.to = to;
       this.value = value;
       this.signature = signature;
+      this.ledgerId = ledgerId;
    }
 
    // Constructors for creating signature
@@ -70,8 +72,8 @@ public class Transaction implements Serializable {
 
    public Integer getValue() { return value; }
    public void setValue(Integer value) { this.value = value; }
-
    public byte[] getSignature() { return signature; }
 
-
+   public Integer getLedgerId() { return ledgerId; }
+   public void setLedgerId(Integer ledgerId) { this.ledgerId = ledgerId; }
 }
