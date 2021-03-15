@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="e-coin:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/e_coin_jar</output-path>
+    <root id="archive" name="e-coin.jar">
+      <element id="module-output" name="e-coin" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/sqlite-jdbc-3.20.1.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

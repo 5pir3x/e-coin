@@ -1,10 +1,8 @@
 package com.company.Model;
 
-import sun.security.provider.DSAPublicKeyImpl;
-
 import java.io.Serializable;
-import java.security.*;
-import java.time.LocalDateTime;
+import java.security.GeneralSecurityException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -12,134 +10,78 @@ import java.util.LinkedList;
 public class Block implements Serializable {
 
 
-    private LinkedList<Block> currentBlockChain = new LinkedList<>();
+//    private LinkedList<Block> currentBlockChain = new LinkedList<>();
     private byte[] prevHash;
     private byte[] currHash;
-    private Integer ledgerId;
-    private ArrayList<Transaction> transactionLedger = new ArrayList<>();
     private String timeStamp;
     private byte[] minedBy;
-    private Wallet blockRewardWallet  = new Wallet(2048,100);
-    //helper class.
-    private Signature signing = Signature.getInstance("SHA256withDSA");
+    private Integer ledgerId = 0;
+    private ArrayList<Transaction> transactionLedger = new ArrayList<>();
+//    public Block() {
+//    }
 
-    public Block(byte[] prevHash) throws NoSuchAlgorithmException {
-        this.prevHash = prevHash;
-    }
-    public Block(Block previousBlock) throws NoSuchAlgorithmException {
-        this.prevHash = previousBlock.currHash;
-    }
-    public Block(LinkedList<Block> currentBlockChain) throws GeneralSecurityException {
-        //Re-Validate the Blockchain before assigning it.
-        verifyBlockChain(currentBlockChain);
-        this.currentBlockChain = currentBlockChain;
-        this.prevHash = currentBlockChain.getLast().getCurrHash();
-    }
-
+//    @Deprecated
+//    public Block(byte[] prevHash) throws NoSuchAlgorithmException {
+//        this.prevHash = prevHash;
+//    }
+//    @Deprecated
+//    public Block(Block previousBlock) throws NoSuchAlgorithmException {
+//        this.prevHash = previousBlock.currHash;
+////        this.currentBlockChain = previousBlock.getCurrentBlockChain();
+//        this.currHash = null;
+//        this.ledgerId = previousBlock.getLedgerId() + 1;
+//    }
+    //This constructor is used when we retrieve it from the db
     public Block(byte[] prevHash, byte[] currHash, String timeStamp, byte[] minedBy,ArrayList<Transaction> transactionLedger) throws NoSuchAlgorithmException {
         this.prevHash = prevHash;
         this.currHash = currHash;
         this.timeStamp = timeStamp;
         this.minedBy = minedBy;
+        if (!(transactionLedger == null || transactionLedger.isEmpty())) {
+            this.ledgerId = transactionLedger.get(0).getLedgerId();
+        }
         this.transactionLedger = transactionLedger;
     }
+    //This constructor is used when we initiate it after retrieve.
+    public Block(LinkedList<Block> currentBlockChain) throws GeneralSecurityException {
+        //Re-Validate the Blockchain before assigning it.
 
-    public void addTransaction(Transaction transaction) throws GeneralSecurityException {
-        transactionLedger.add(transaction);
-       if (getBalance(currentBlockChain,transactionLedger,new DSAPublicKeyImpl(transaction.getFrom())) < 0) {
-           transactionLedger.remove(transaction);
-           throw new GeneralSecurityException("Not enough funds to record transaction");
-       }
-    }
-    private void addBlockRewardTransaction(Transaction transaction) throws GeneralSecurityException {
-        transactionLedger.add(transaction);
+//        this.currentBlockChain = currentBlockChain;
+        Block lastBlock = currentBlockChain.getLast();
+        prevHash = lastBlock.getCurrHash();
+        ledgerId = lastBlock.getLedgerId() + 1;
     }
 
-    public LinkedList<Block> finalizeBlock(Wallet minersWallet) throws GeneralSecurityException {
-        currHash = prevHash;
-        for (Transaction transaction : transactionLedger) {
-            if (transaction.isVerified(transaction, new DSAPublicKeyImpl(transaction.getFrom())) && getBalance(currentBlockChain,transactionLedger,new DSAPublicKeyImpl(transaction.getFrom())) >= 0) {
-                this.currHash = (Arrays.toString(currHash) + Arrays.toString(transaction.getSignature())).getBytes();
-            } else {
-                throw new GeneralSecurityException("Block transactions validation failed");
-            }
-        }
-        //Reward transaction
-        Transaction transaction = new Transaction(blockRewardWallet.getPublicKey().getEncoded(),minersWallet.getPublicKey().getEncoded(),100,blockRewardWallet.getPrivateKey());
-        addBlockRewardTransaction(transaction);
-        this.currHash = (Arrays.toString(currHash) + Arrays.toString(transaction.getSignature())).getBytes();
-        signing.initSign(minersWallet.getPrivateKey());
-        signing.update(currHash);
-        currHash = signing.sign();
-        this.timeStamp = LocalDateTime.now().toString();
-        minedBy = minersWallet.getPublicKey().getEncoded();
-        currentBlockChain.add(this);
-        return currentBlockChain;
-    }
 
-    public LinkedList<Block> getCurrentBlockChain() { return currentBlockChain; }
+
+
+//    public LinkedList<Block> getCurrentBlockChain() { return currentBlockChain; }
 
     public byte[] getPrevHash() { return prevHash; }
     public byte[] getCurrHash() { return currHash; }
 
+    public void setPrevHash(byte[] prevHash) { this.prevHash = prevHash; }
+    public void setCurrHash(byte[] currHash) { this.currHash = currHash; }
+
     public ArrayList<Transaction> getTransactionLedger() { return transactionLedger; }
+    public void setTransactionLedger(ArrayList<Transaction> transactionLedger) { this.transactionLedger = transactionLedger; }
 
     public String getTimeStamp() { return timeStamp; }
+    public void setMinedBy(byte[] minedBy) { this.minedBy = minedBy; }
+
+    public void setTimeStamp(String timeStamp) { this.timeStamp = timeStamp; }
 
     public byte[] getMinedBy() { return minedBy; }
 
-    public boolean verifyBlockChain (LinkedList<Block> currentBlockChain) throws GeneralSecurityException {
-        for (Block block : currentBlockChain) {
-            for (Transaction transaction : block.getTransactionLedger()) {
-                if (!transaction.isVerified(transaction, new DSAPublicKeyImpl(transaction.getFrom()))) {
-                    throw new GeneralSecurityException("Blockchain validation failed");
-                }
-            }
-        }
-        return true;
-    }
-    public Integer getBalance(LinkedList<Block> blockChain, PublicKey walletAddress) {
-        Integer balance = 0;
-        for (Block block : blockChain) {
-            for ( Transaction transaction : block.getTransactionLedger()) {
-                if (Arrays.equals(transaction.getFrom(), walletAddress.getEncoded())) {
-                    balance -= transaction.getValue();
-                } else if (Arrays.equals(transaction.getTo(), walletAddress.getEncoded())) {
-                    balance += transaction.getValue();
-                }
-            }
-        }
-        return balance;
-    }
 
-    public Integer getBalance(LinkedList<Block> blockChain, ArrayList<Transaction> currentLedger, PublicKey walletAddress) {
-        Integer balance = 0;
-        for (Block block : blockChain) {
-            for (Transaction transaction : block.getTransactionLedger()) {
-                if (Arrays.equals(transaction.getFrom(), walletAddress.getEncoded())) {
-                    balance -= transaction.getValue();
-                } else if (Arrays.equals(transaction.getTo(), walletAddress.getEncoded())) {
-                    balance += transaction.getValue();
-                }
-            }
-        }
-            for ( Transaction transaction : currentLedger) {
-                if (Arrays.equals(transaction.getFrom(), walletAddress.getEncoded())) {
-                    balance -= transaction.getValue();
-                } else if (Arrays.equals(transaction.getTo(), walletAddress.getEncoded())) {
-                    balance += transaction.getValue();
-                }
-            }
+    public Integer getLedgerId() { return ledgerId; }
+    public void setLedgerId(Integer ledgerId) { this.ledgerId = ledgerId; }
 
-        return balance;
-    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Block)) return false;
-
         Block block = (Block) o;
-
         // Probably incorrect - comparing Object[] arrays with Arrays.equals
         if (!Arrays.equals(prevHash, block.prevHash)) return false;
         // Probably incorrect - comparing Object[] arrays with Arrays.equals
