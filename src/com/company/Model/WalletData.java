@@ -8,6 +8,8 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.sql.*;
+import java.util.Arrays;
+import java.util.LinkedList;
 
 public class WalletData {
 
@@ -18,8 +20,21 @@ public class WalletData {
         instance = new WalletData();
     }
     //todo:Make sure this displays correct balance.
-    public String getWalletBalanceFX() {
-        return wallet.getBalance().toString();
+    public String getWalletBalanceFX(LinkedList<Block> blockChain) {
+        return getBalance(blockChain).toString();
+    }
+    public Integer getBalance(LinkedList<Block> blockChain) {
+        Integer balance = 0;
+        for (Block block : blockChain) {
+            for ( Transaction transaction : block.getTransactionLedger()) {
+                if (Arrays.equals(transaction.getFrom(), wallet.getPublicKey().getEncoded())) {
+                    balance -= transaction.getValue();
+                } else if (Arrays.equals(transaction.getTo(), wallet.getPublicKey().getEncoded())) {
+                    balance += transaction.getValue();
+                }
+            }
+        }
+        return balance;
     }
     public static WalletData getInstance(){
         return instance;
