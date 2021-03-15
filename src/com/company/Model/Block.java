@@ -10,27 +10,13 @@ import java.util.LinkedList;
 public class Block implements Serializable {
 
 
-//    private LinkedList<Block> currentBlockChain = new LinkedList<>();
     private byte[] prevHash;
     private byte[] currHash;
     private String timeStamp;
     private byte[] minedBy;
     private Integer ledgerId = 0;
     private ArrayList<Transaction> transactionLedger = new ArrayList<>();
-//    public Block() {
-//    }
 
-//    @Deprecated
-//    public Block(byte[] prevHash) throws NoSuchAlgorithmException {
-//        this.prevHash = prevHash;
-//    }
-//    @Deprecated
-//    public Block(Block previousBlock) throws NoSuchAlgorithmException {
-//        this.prevHash = previousBlock.currHash;
-////        this.currentBlockChain = previousBlock.getCurrentBlockChain();
-//        this.currHash = null;
-//        this.ledgerId = previousBlock.getLedgerId() + 1;
-//    }
     //This constructor is used when we retrieve it from the db
     public Block(byte[] prevHash, byte[] currHash, String timeStamp, byte[] minedBy,Integer ledgerId, ArrayList<Transaction> transactionLedger) throws NoSuchAlgorithmException {
         this.prevHash = prevHash;
@@ -42,17 +28,10 @@ public class Block implements Serializable {
     }
     //This constructor is used when we initiate it after retrieve.
     public Block(LinkedList<Block> currentBlockChain) throws GeneralSecurityException {
-        //Re-Validate the Blockchain before assigning it.
-//        this.currentBlockChain = currentBlockChain;
         Block lastBlock = currentBlockChain.getLast();
         prevHash = lastBlock.getCurrHash();
         ledgerId = lastBlock.getLedgerId() + 1;
     }
-
-
-
-
-//    public LinkedList<Block> getCurrentBlockChain() { return currentBlockChain; }
 
     public byte[] getPrevHash() { return prevHash; }
     public byte[] getCurrHash() { return currHash; }
