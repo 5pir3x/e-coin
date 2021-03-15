@@ -32,20 +32,17 @@ public class Block implements Serializable {
 //        this.ledgerId = previousBlock.getLedgerId() + 1;
 //    }
     //This constructor is used when we retrieve it from the db
-    public Block(byte[] prevHash, byte[] currHash, String timeStamp, byte[] minedBy,ArrayList<Transaction> transactionLedger) throws NoSuchAlgorithmException {
+    public Block(byte[] prevHash, byte[] currHash, String timeStamp, byte[] minedBy,Integer ledgerId, ArrayList<Transaction> transactionLedger) throws NoSuchAlgorithmException {
         this.prevHash = prevHash;
         this.currHash = currHash;
         this.timeStamp = timeStamp;
         this.minedBy = minedBy;
-        if (!(transactionLedger == null || transactionLedger.isEmpty())) {
-            this.ledgerId = transactionLedger.get(0).getLedgerId();
-        }
+        this.ledgerId = ledgerId;
         this.transactionLedger = transactionLedger;
     }
     //This constructor is used when we initiate it after retrieve.
     public Block(LinkedList<Block> currentBlockChain) throws GeneralSecurityException {
         //Re-Validate the Blockchain before assigning it.
-
 //        this.currentBlockChain = currentBlockChain;
         Block lastBlock = currentBlockChain.getLast();
         prevHash = lastBlock.getCurrHash();

@@ -51,9 +51,8 @@ public class MainWindowController {
                 new PropertyValueFactory<Transaction, String>("signature"));
 //        eCoins.setItems(WalletData.getInstance().getWalletBalanceFX());
 
-        WalletData walletData = WalletData.getInstance();
-        eCoins.setText(walletData.getWalletBalanceFX());
-        publicKey.setText(Arrays.toString(walletData.getWallet().getPublicKey().getEncoded()));
+        eCoins.setText(WalletData.getInstance().getWalletBalanceFX(BlockData.getInstance().getCurrentBlockChain()));
+        publicKey.setText(Arrays.toString(WalletData.getInstance().getWallet().getPublicKey().getEncoded()));
         ObservableList<Transaction> tl = BlockData.getInstance().getTransactionLedger();
         tableview.setItems(BlockData.getInstance().getTransactionLedger());
         tableview.getSelectionModel().select(0);
@@ -84,6 +83,9 @@ public class MainWindowController {
     @FXML
     public void mineBlock() {
         BlockData.getInstance().mineBlock();
+        tableview.setItems(BlockData.getInstance().getTransactionLedger());
+        tableview.getSelectionModel().select(0);
+        eCoins.setText(WalletData.getInstance().getWalletBalanceFX(BlockData.getInstance().getCurrentBlockChain()));
     }
 
 

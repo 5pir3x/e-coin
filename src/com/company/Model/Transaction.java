@@ -28,12 +28,12 @@ public class Transaction implements Serializable {
    }
 
    // Constructors for creating signature
-   public Transaction(byte[] from, byte[] to, Integer value, PrivateKey privateKey) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+   public Transaction(byte[] from, byte[] to, Integer value, PrivateKey privateKey, Integer ledgerId) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
       this.from = from;
       this.to = to;
       this.value = value;
       this.signing.initSign(privateKey);
-//      String sr = ( Arrays.toString(from) + " " + Arrays.toString(to) + " " +  value.toString());
+      this.ledgerId = ledgerId;
       String sr = this.toString();
       signing.update(sr.getBytes());
       signature = signing.sign();

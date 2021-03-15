@@ -2,10 +2,8 @@ package com.company.Model;
 
 import java.io.Serializable;
 import java.security.*;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 
 public class Wallet implements Serializable {
 
@@ -32,12 +30,13 @@ public class Wallet implements Serializable {
     //Constructor for importing Keys only
     public Wallet(PublicKey publicKey, PrivateKey privateKey) throws NoSuchAlgorithmException {
         this.keyPair = new KeyPair(publicKey,privateKey);
+        this.walletAddress = keyPair.getPublic();
     }
     //Constructor for importing Keys and calculating balance from blockchain
-    public Wallet(PublicKey publicKey, PrivateKey privateKey,LinkedList<Block> blockChain) throws NoSuchAlgorithmException {
-        this(publicKey,privateKey);
-        setBalance(getBalance(blockChain));
-    }
+//    public Wallet(PublicKey publicKey, PrivateKey privateKey,LinkedList<Block> blockChain) throws NoSuchAlgorithmException {
+//        this(publicKey,privateKey);
+//        setBalance(getBalance(blockChain));
+//    }
 
     public KeyPair getKeyPair() { return keyPair; }
 
@@ -46,19 +45,7 @@ public class Wallet implements Serializable {
 
     public Integer getBalance() { return balance; }
     public void setBalance(Integer balance) { this.balance = balance; }
-    public Integer getBalance(LinkedList<Block> blockChain) {
-        Integer balance = 0;
-        for (Block block : blockChain) {
-            for ( Transaction transaction : block.getTransactionLedger()) {
-                if (Arrays.equals(transaction.getFrom(), walletAddress.getEncoded())) {
-                    balance -= transaction.getValue();
-                } else if (Arrays.equals(transaction.getTo(), walletAddress.getEncoded())) {
-                    balance += transaction.getValue();
-                }
-            }
-        }
-        return balance;
-    }
+
     public Integer getBalance(Integer balance, ArrayList<Transaction> currentLedger) {
         for ( Transaction transaction : currentLedger) {
             if (Arrays.equals(transaction.getFrom(), keyPair.getPublic().getEncoded())) {
