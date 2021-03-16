@@ -20,8 +20,6 @@
                 <Menu mnemonicParsing="false" text="Menu">
                     <items>
                         <MenuItem mnemonicParsing="false" onAction="#toNewTransactionController" text="Make Transaction" />
-<!--                        <MenuItem mnemonicParsing="false" onAction="#editSelectedItem" text="Edit Contact" />-->
-                        <MenuItem id="deleteButton" mnemonicParsing="false" onAction="#deleteSelectedItem" text="Delete Contact" />
                         <MenuItem mnemonicParsing="false" onAction="#handleExit" text="Exit" />
                     </items>
                 </Menu>
@@ -47,7 +45,6 @@
          <right>
             <ButtonBar prefHeight="50.0" prefWidth="245.0" BorderPane.alignment="CENTER">
               <buttons>
-                <Button mnemonicParsing="false" text="Generate KeyPair" />
                 <Button mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT" onAction="#mineBlock" prefHeight="21.0" prefWidth="53.0" text="Mine!" textAlignment="CENTER" />
               </buttons>
             </ButtonBar>

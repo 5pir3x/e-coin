@@ -2,6 +2,7 @@ package com.company.ServiceData;
 
 import com.company.Model.Block;
 import com.company.Model.Transaction;
+import com.company.Model.TransactionFX;
 import com.company.Model.Wallet;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,8 +20,8 @@ import java.util.LinkedList;
 
 public class BlockData  {
 
-
-    private ObservableList<Transaction> newBlockTransactionsFX;
+    private ObservableList<TransactionFX> newBlockTransactionsFX;
+    private ObservableList<Transaction> newBlockTransactions;
     private LinkedList<Block> currentBlockChain = new LinkedList<>();
     private Block latestBlock;
     private Wallet blockRewardWallet  = new Wallet(2048,100);
@@ -39,6 +40,7 @@ public class BlockData  {
     }
 
     public BlockData() throws NoSuchAlgorithmException {
+        newBlockTransactions = FXCollections.observableArrayList();
         newBlockTransactionsFX = FXCollections.observableArrayList();
     }
 
@@ -46,11 +48,15 @@ public class BlockData  {
         return instance;
     }
 
-    public ObservableList<Transaction> getTransactionLedgerFX() {
+    public ObservableList<TransactionFX> getTransactionLedgerFX() {
+        newBlockTransactionsFX.clear();
+        for (Transaction transaction : newBlockTransactions) {
+            newBlockTransactionsFX.add(new TransactionFX(transaction));
+        }
         return FXCollections.observableArrayList(newBlockTransactionsFX);
     }
     public String getWalletBallanceFX() {
-      return getBalance(currentBlockChain, newBlockTransactionsFX, WalletData.getInstance().getWallet().getPublicKey()).toString();
+      return getBalance(currentBlockChain, newBlockTransactions, WalletData.getInstance().getWallet().getPublicKey()).toString();
     }
     private void verifyBlockChain (LinkedList<Block> currentBlockChain) throws GeneralSecurityException {
         for (Block block : currentBlockChain) {
@@ -64,10 +70,10 @@ public class BlockData  {
 
     public void addTransaction(Transaction transaction) throws GeneralSecurityException {
         try {
-            if (getBalance(currentBlockChain, newBlockTransactionsFX,transaction,new DSAPublicKeyImpl(transaction.getFrom())) < 0) {
+            if (getBalance(currentBlockChain, newBlockTransactions,transaction,new DSAPublicKeyImpl(transaction.getFrom())) < 0) {
                 throw new GeneralSecurityException("Not enough funds to record transaction");
             } else {
-                newBlockTransactionsFX.add(transaction);
+                newBlockTransactions.add(transaction);
                 Connection connection = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\ecointest2.db");
 
                 PreparedStatement pstmt;
@@ -155,7 +161,7 @@ public class BlockData  {
             }
 
             latestBlock = currentBlockChain.getLast();
-            newBlockTransactionsFX.addAll(loadTransactionLedger(latestBlock.getLedgerId() + 1));
+            newBlockTransactions.addAll(loadTransactionLedger(latestBlock.getLedgerId() + 1));
             verifyBlockChain(currentBlockChain);
             resultSet.close();
             stmt.close();
@@ -211,7 +217,7 @@ public class BlockData  {
             pstmt.setString(4,latestBlock.getTimeStamp());
             pstmt.setBytes(5,WalletData.getInstance().getWallet().getPublicKey().getEncoded());
             pstmt.executeUpdate();
-            newBlockTransactionsFX.clear();
+            newBlockTransactions.clear();
 //            newBlockTransactionsFX.addAll(latestBlock.getTransactionLedger());
             pstmt.close();
             connection.close();
