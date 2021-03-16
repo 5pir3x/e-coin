@@ -1,8 +1,8 @@
 package com.company;
 
-import com.company.Model.BlockData;
+import com.company.ServiceData.BlockData;
 import com.company.Model.Wallet;
-import com.company.Model.WalletData;
+import com.company.ServiceData.WalletData;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
