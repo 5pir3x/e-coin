@@ -1,4 +1,8 @@
-package com.company.Model;
+package com.company.ServiceData;
+
+import com.company.Model.Block;
+import com.company.Model.Transaction;
+import com.company.Model.Wallet;
 
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;

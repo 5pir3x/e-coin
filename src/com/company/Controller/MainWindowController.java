@@ -1,10 +1,9 @@
 package com.company.Controller;
 
-import com.company.Model.BlockData;
+import com.company.ServiceData.BlockData;
 import com.company.Model.Transaction;
-import com.company.Model.WalletData;
+import com.company.ServiceData.WalletData;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
@@ -12,24 +11,25 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.SQLException;
-import java.util.Arrays;
+import java.util.Base64;
 import java.util.Optional;
 
 public class MainWindowController {
 
     @FXML
-    public TableView tableview = new TableView(); //this is read-only UI table
+    public TableView<Transaction> tableview = new TableView<>(); //this is read-only UI table
     @FXML
-    private TableColumn from;
+    private TableColumn<byte[],byte[]> from;
     @FXML
-    private TableColumn to;
+    private TableColumn<Transaction,byte[]> to;
     @FXML
-    private TableColumn value;
+    private TableColumn<Transaction,Integer> value;
     @FXML
-    private TableColumn signature;
+    private TableColumn<Transaction,byte[]> signature;
     @FXML
     private BorderPane borderPane;
     @FXML
@@ -39,24 +39,22 @@ public class MainWindowController {
     @FXML
     private TextArea publicKey;
 
-    public void initialize() throws NoSuchAlgorithmException, SQLException, InvalidKeySpecException {
+    public void initialize() throws NoSuchAlgorithmException, SQLException, InvalidKeySpecException, UnsupportedEncodingException {
 
         from.setCellValueFactory(
-                new PropertyValueFactory<Transaction, String>("from"));
+                new PropertyValueFactory<>("from"));
         to.setCellValueFactory(
-                new PropertyValueFactory<Transaction, String>("to"));
+                new PropertyValueFactory<>("to"));
         value.setCellValueFactory(
                 new PropertyValueFactory<Transaction, Integer>("value"));
         signature.setCellValueFactory(
-                new PropertyValueFactory<Transaction, String>("signature"));
-//        eCoins.setItems(WalletData.getInstance().getWalletBalanceFX());
+                new PropertyValueFactory<>("signature"));
 
+        Base64.Encoder encoder = Base64.getEncoder();
         eCoins.setText(WalletData.getInstance().getWalletBalanceFX(BlockData.getInstance().getCurrentBlockChain()));
-        publicKey.setText(Arrays.toString(WalletData.getInstance().getWallet().getPublicKey().getEncoded()));
-        ObservableList<Transaction> tl = BlockData.getInstance().getTransactionLedger();
-        tableview.setItems(BlockData.getInstance().getTransactionLedger());
+        publicKey.setText(encoder.encodeToString(WalletData.getInstance().getWallet().getPublicKey().getEncoded()));
+        tableview.setItems(BlockData.getInstance().getTransactionLedgerFX());
         tableview.getSelectionModel().select(0);
-
     }
 
     @FXML
@@ -76,16 +74,17 @@ public class MainWindowController {
         newTransactionController.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
 
         Optional<ButtonType> result = newTransactionController.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            System.out.println("Ok pressed");
+        if (result.isPresent() ) {
+            tableview.setItems(BlockData.getInstance().getTransactionLedgerFX());
+            eCoins.setText(BlockData.getInstance().getWalletBallanceFX());
         }
     }
     @FXML
     public void mineBlock() {
         BlockData.getInstance().mineBlock();
-        tableview.setItems(BlockData.getInstance().getTransactionLedger());
+        tableview.setItems(BlockData.getInstance().getTransactionLedgerFX());
         tableview.getSelectionModel().select(0);
-        eCoins.setText(WalletData.getInstance().getWalletBalanceFX(BlockData.getInstance().getCurrentBlockChain()));
+        eCoins.setText(BlockData.getInstance().getWalletBallanceFX());
     }
 
 
