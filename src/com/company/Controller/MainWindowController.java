@@ -1,7 +1,7 @@
 package com.company.Controller;
 
+import com.company.Model.TransactionFX;
 import com.company.ServiceData.BlockData;
-import com.company.Model.Transaction;
 import com.company.ServiceData.WalletData;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -21,15 +21,15 @@ import java.util.Optional;
 public class MainWindowController {
 
     @FXML
-    public TableView<Transaction> tableview = new TableView<>(); //this is read-only UI table
+    public TableView<TransactionFX> tableview = new TableView<>(); //this is read-only UI table
     @FXML
-    private TableColumn<byte[],byte[]> from;
+    private TableColumn<TransactionFX,byte[]> from;
     @FXML
-    private TableColumn<Transaction,byte[]> to;
+    private TableColumn<TransactionFX,byte[]> to;
     @FXML
-    private TableColumn<Transaction,Integer> value;
+    private TableColumn<TransactionFX,Integer> value;
     @FXML
-    private TableColumn<Transaction,byte[]> signature;
+    private TableColumn<TransactionFX,byte[]> signature;
     @FXML
     private BorderPane borderPane;
     @FXML
@@ -40,17 +40,17 @@ public class MainWindowController {
     private TextArea publicKey;
 
     public void initialize() throws NoSuchAlgorithmException, SQLException, InvalidKeySpecException, UnsupportedEncodingException {
-
+        Base64.Encoder encoder = Base64.getEncoder();
         from.setCellValueFactory(
                 new PropertyValueFactory<>("from"));
         to.setCellValueFactory(
                 new PropertyValueFactory<>("to"));
         value.setCellValueFactory(
-                new PropertyValueFactory<Transaction, Integer>("value"));
+                new PropertyValueFactory<>("value"));
         signature.setCellValueFactory(
                 new PropertyValueFactory<>("signature"));
 
-        Base64.Encoder encoder = Base64.getEncoder();
+
         eCoins.setText(WalletData.getInstance().getWalletBalanceFX(BlockData.getInstance().getCurrentBlockChain()));
         publicKey.setText(encoder.encodeToString(WalletData.getInstance().getWallet().getPublicKey().getEncoded()));
         tableview.setItems(BlockData.getInstance().getTransactionLedgerFX());
