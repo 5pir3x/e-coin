@@ -54,24 +54,6 @@ public class Block implements Serializable {
     public void setLedgerId(Integer ledgerId) { this.ledgerId = ledgerId; }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Block)) return false;
-        Block block = (Block) o;
-        // Probably incorrect - comparing Object[] arrays with Arrays.equals
-        if (!Arrays.equals(prevHash, block.prevHash)) return false;
-        // Probably incorrect - comparing Object[] arrays with Arrays.equals
-        return Arrays.equals(currHash, block.currHash);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = Arrays.hashCode(prevHash);
-        result = 31 * result + Arrays.hashCode(currHash);
-        return result;
-    }
-
-    @Override
     public String toString() {
         return "Block{" +
                 "prevHash=" + Arrays.toString(prevHash) +

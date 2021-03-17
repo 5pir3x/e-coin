@@ -204,10 +204,9 @@ public class BlockData  {
     public void mineBlock() {
 
         try {
-            Connection connection = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\ecointest2.db");
-
-
             finalizeBlock(WalletData.getInstance().getWallet());
+
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\ecointest2.db");
             PreparedStatement pstmt;
             pstmt = connection.prepareStatement("INSERT INTO BLOCKCHAIN(PREVIOUS_HASH, CURRENT_HASH , LEDGER_ID, CREATED_ON, CREATED_BY) " +
                     " VALUES (?,?,?,?,?) ");
@@ -217,8 +216,6 @@ public class BlockData  {
             pstmt.setString(4,latestBlock.getTimeStamp());
             pstmt.setBytes(5,WalletData.getInstance().getWallet().getPublicKey().getEncoded());
             pstmt.executeUpdate();
-            newBlockTransactions.clear();
-//            newBlockTransactionsFX.addAll(latestBlock.getTransactionLedger());
             pstmt.close();
             connection.close();
         } catch (SQLException | GeneralSecurityException e) {
@@ -228,26 +225,8 @@ public class BlockData  {
 
     }
 
-    public LinkedList<Block> finalizeBlock(Wallet minersWallet) throws GeneralSecurityException, SQLException {
+    public void finalizeBlock(Wallet minersWallet) throws GeneralSecurityException, SQLException {
         //Reward transaction
-        Transaction transaction = new Transaction(blockRewardWallet,minersWallet.getPublicKey().getEncoded(),100,latestBlock.getLedgerId());
-        Connection connection = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\ecointest2.db");
-        try {
-            PreparedStatement pstmt = connection.prepareStatement(" INSERT INTO TRANSACTIONS(\"FROM\", \"TO\", LEDGER_ID, VALUE, SIGNATURE) " +
-                    " VALUES (?,?,?,?,?) ");
-            pstmt.setBytes(1, transaction.getFrom());
-            pstmt.setBytes(2, transaction.getTo());
-            pstmt.setInt(3, transaction.getLedgerId());
-            pstmt.setInt(4,100);
-            pstmt.setBytes(5,transaction.getSignature());
-            pstmt.executeUpdate();
-            pstmt.close();
-            connection.close();
-        } catch (SQLException e) {
-            System.out.println("Problem with DB: " + e.getMessage());
-            e.printStackTrace();
-        }
-        addBlockRewardTransaction(transaction);
         latestBlock = new Block(BlockData.getInstance().currentBlockChain);
         latestBlock.setTransactionLedger(loadTransactionLedger(latestBlock.getLedgerId()));
         latestBlock.setCurrHash(latestBlock.getPrevHash());
@@ -259,14 +238,35 @@ public class BlockData  {
 //                throw new GeneralSecurityException("Block transactions validation failed");
 //            }
         }
-        latestBlock.setCurrHash((Arrays.toString(latestBlock.getCurrHash()) + Arrays.toString(transaction.getSignature())).getBytes());
+
         signing.initSign(minersWallet.getPrivateKey());
         signing.update(latestBlock.getCurrHash());
         latestBlock.setCurrHash( signing.sign());
         latestBlock.setTimeStamp(LocalDateTime.now().toString());
         latestBlock.setMinedBy(minersWallet.getPublicKey().getEncoded());
         currentBlockChain.add(latestBlock);
-        return currentBlockChain;
+        Transaction transaction = new Transaction(blockRewardWallet,minersWallet.getPublicKey().getEncoded(),100,latestBlock.getLedgerId());
+        Connection connection = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\ecointest2.db");
+
+        try {
+            PreparedStatement pstmt = connection.prepareStatement(" INSERT INTO TRANSACTIONS(\"FROM\", \"TO\", LEDGER_ID, VALUE, SIGNATURE) " +
+                    " VALUES (?,?,?,?,?) ");
+            pstmt.setBytes(1, transaction.getFrom());
+            pstmt.setBytes(2, transaction.getTo());
+            pstmt.setInt(3, transaction.getLedgerId());
+            pstmt.setInt(4,100);
+            pstmt.setBytes(5,transaction.getSignature());
+            pstmt.executeUpdate();
+            newBlockTransactions.clear();
+            newBlockTransactions.add(transaction);
+            pstmt.close();
+            connection.close();
+        } catch (SQLException e) {
+            System.out.println("Problem with DB: " + e.getMessage());
+            e.printStackTrace();
+        }
+        addBlockRewardTransaction(transaction);
+
     }
     public LinkedList<Block> getCurrentBlockChain() { return currentBlockChain; }
     public void setCurrentBlockChain(LinkedList<Block> currentBlockChain) { this.currentBlockChain = currentBlockChain; }
