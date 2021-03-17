@@ -33,8 +33,6 @@ public class MainWindowController {
     @FXML
     private BorderPane borderPane;
     @FXML
-    public static int index;
-    @FXML
     private TextField eCoins ;
     @FXML
     private TextArea publicKey;
@@ -87,37 +85,6 @@ public class MainWindowController {
         eCoins.setText(BlockData.getInstance().getWalletBallanceFX());
     }
 
-
-//    @FXML
-//    public void editSelectedItem() {
-//        index = tableview.getSelectionModel().getSelectedIndex();
-//        Dialog<ButtonType> newContactController = new Dialog<>();
-//        newContactController.initOwner(borderPane.getScene().getWindow());
-//        FXMLLoader fxmlLoader = new FXMLLoader();
-//        fxmlLoader.setLocation(getClass().getResource("EditNewContactWindow.fxml"));
-//        try {
-//            Parent root = FXMLLoader.load(getClass().getResource("AddNewContactWindow.fxml"));
-//            newContactController.getDialogPane().setContent(fxmlLoader.load());
-//        } catch (IOException e) {
-//            System.out.println("Cant load dialog");
-//            e.printStackTrace();
-//            return;
-//        }
-//        newContactController.getDialogPane().getButtonTypes().add(ButtonType.OK);
-//        newContactController.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
-//
-//        newContactController.showAndWait();
-//
-//
-//
-//    }
-    @FXML
-    public void deleteSelectedItem() {
-        int index = tableview.getSelectionModel().getSelectedIndex();
-//        ContactData.getInstance().deleteContact(index);
-
-
-    }
 
     @FXML
     public void handleExit() {
