@@ -2,6 +2,7 @@ package com.company.Model;
 
 import java.io.Serializable;
 import java.security.*;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 public class Transaction implements Serializable {
@@ -12,6 +13,7 @@ public class Transaction implements Serializable {
    private byte[] to;
    //value to be transferred
    private Integer value;
+   private String timeStamp;
    //encrypted with my private key
    private byte[] signature;
    private Integer ledgerId;
@@ -19,12 +21,13 @@ public class Transaction implements Serializable {
    private Signature signing = Signature.getInstance("SHA256withDSA");
 
    //Constructor for loading with existing signature
-   public Transaction(byte[] from, byte[] to, Integer value, byte[] signature, Integer ledgerId) throws NoSuchAlgorithmException {
+   public Transaction(byte[] from, byte[] to, Integer value, byte[] signature, Integer ledgerId,String timeStamp) throws NoSuchAlgorithmException {
       this.from = from;
       this.to = to;
       this.value = value;
       this.signature = signature;
       this.ledgerId = ledgerId;
+      this.timeStamp = timeStamp;
    }
 
    public Transaction (Wallet fromWallet, byte[] toAddress, Integer value, Integer ledgerId) throws InvalidKeyException, SignatureException, NoSuchAlgorithmException {
@@ -33,9 +36,10 @@ public class Transaction implements Serializable {
       this.value = value;
       this.signing.initSign(fromWallet.getPrivateKey());
       this.ledgerId = ledgerId;
+      this.timeStamp = LocalDateTime.now().toString();
       String sr = this.toString();
       signing.update(sr.getBytes());
-      signature = signing.sign();
+      this.signature = signing.sign();
    }
 
 
@@ -51,6 +55,8 @@ public class Transaction implements Serializable {
               "from=" + Arrays.toString(from) +
               ", to=" + Arrays.toString(to) +
               ", value=" + value +
+              ", timeStamp= " + timeStamp +
+              ", ledgerId=" + ledgerId +
               '}';
    }
 
@@ -66,4 +72,8 @@ public class Transaction implements Serializable {
 
    public Integer getLedgerId() { return ledgerId; }
    public void setLedgerId(Integer ledgerId) { this.ledgerId = ledgerId; }
+
+   public String getTimeStamp() {
+      return timeStamp;
+   }
 }

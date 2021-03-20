@@ -18,12 +18,11 @@ public class Wallet implements Serializable {
        keyPairGen.initialize(keySize);
        this.keyPair = keyPairGen.generateKeyPair();
        this.walletAddress = keyPair.getPublic();
-
     }
     //Constructor for Block wallet.
     public Wallet(Integer keySize,Integer blockBalance) throws NoSuchAlgorithmException {
      this(keySize);
-        balance = 100;
+        balance = blockBalance;
     }
     //Constructor for importing Keys only
     public Wallet(PublicKey publicKey, PrivateKey privateKey) throws NoSuchAlgorithmException {
