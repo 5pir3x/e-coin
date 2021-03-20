@@ -1,7 +1,7 @@
 package com.company;
 
-import com.company.ServiceData.BlockData;
 import com.company.Model.Wallet;
+import com.company.ServiceData.BlockData;
 import com.company.ServiceData.WalletData;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -19,7 +19,7 @@ public class ECoin extends Application{
 public static void main(String[]args){ launch(args); }
 
 @Override
-public void start(Stage primaryStage) throws IOException, SQLException {
+public void start(Stage primaryStage) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("View/MainWindow.fxml"));
         primaryStage.setTitle("E-Coin");
         primaryStage.setScene(new Scene(root, 700, 600));
@@ -30,7 +30,7 @@ public void start(Stage primaryStage) throws IOException, SQLException {
         @Override
         public void init() throws NoSuchAlgorithmException, SQLException, InvalidKeySpecException {
                 try {
-                        //todo:Create the appropriate columns in BLOB type.
+//                        This will create the db tables with columns for the Blockchain.
                         Connection connection = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\ecointest2.db");
                         Statement stmt = connection.createStatement();
                         stmt.executeUpdate("CREATE TABLE IF NOT EXISTS BLOCKCHAIN ( " +
@@ -40,6 +40,8 @@ public void start(Stage primaryStage) throws IOException, SQLException {
                                 " LEDGER_ID INTEGER NOT NULL UNIQUE, " +
                                 " CREATED_ON  TEXT, " +
                                 " CREATED_BY  BLOB, " +
+                                " MINING_POINTS  TEXT, " +
+                                " LUCK  NUMERIC, " +
                                 " PRIMARY KEY( ID AUTOINCREMENT) " +
                                 ")"
                         );
@@ -50,11 +52,12 @@ public void start(Stage primaryStage) throws IOException, SQLException {
                                 " LEDGER_ID INTEGER, " +
                                 " VALUE INTEGER, " +
                                 " SIGNATURE BLOB, " +
+                                " CREATED_ON TEXT, " +
                                 " PRIMARY KEY(ID AUTOINCREMENT) " +
                                 ")"
                         );
 
-                        //This creates your wallet if there is none
+                        //This creates your wallet if there is none and give you a KeyPair.
                         //We will create it in separate db for better security and ease of portability.
                         Connection walletConnection = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\wallet.db");
                         Statement walletStatment = walletConnection.createStatement();
@@ -84,8 +87,9 @@ public void start(Stage primaryStage) throws IOException, SQLException {
                 System.out.println("db failed: " + e.getMessage());
                 }
 //                                ContactData.getInstance().loadContacts();
-                BlockData.getInstance().loadBlockChain();
+
                 WalletData.getInstance().loadWallet();
+                BlockData.getInstance().loadBlockChain();
         }
 
 //        @Override

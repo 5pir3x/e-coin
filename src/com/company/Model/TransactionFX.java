@@ -10,6 +10,7 @@ public class TransactionFX  implements Serializable {
     private Integer value;
     private Integer ledgerId;
     private String signature;
+    private String timestamp;
     private Base64.Encoder encoder = Base64.getEncoder();
 
     public TransactionFX(Transaction transaction) {
@@ -17,6 +18,7 @@ public class TransactionFX  implements Serializable {
         this.to = encoder.encodeToString(transaction.getTo());
         this.value = transaction.getValue();
         this.ledgerId = transaction.getLedgerId();
+        this.timestamp = transaction.getTimeStamp();
         this.signature = encoder.encodeToString(transaction.getSignature());
     }
 
@@ -25,5 +27,6 @@ public class TransactionFX  implements Serializable {
     public String getTo() { return to; }
     public Integer getValue() { return value; }
     public String getSignature() { return signature; }
+    public String getTimestamp() { return timestamp; }
     public Base64.Encoder getEncoder() { return encoder; }
 }

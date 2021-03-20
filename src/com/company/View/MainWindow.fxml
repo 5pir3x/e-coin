@@ -35,6 +35,7 @@
                       <TableColumn fx:id="to" prefWidth="160" text="To" />
                       <TableColumn fx:id="value" prefWidth="160" text="Value" />
                       <TableColumn fx:id="signature" prefWidth="160" text="Signature" />
+                      <TableColumn fx:id="timestamp" prefWidth="160" text="Created On" />
                </columns>
             </TableColumn>
             </columns>
