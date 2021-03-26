@@ -1,27 +1,53 @@
 package com.company;
 
-import java.security.GeneralSecurityException;
+import com.company.Model.Wallet;
+import com.company.Model.WalletDataNetwork;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Scanner;
 
 
 public class Main {
 
-    public static void main(String[] args) throws GeneralSecurityException {
+    public static void main(String[] args) {
+        try (Socket socket = new Socket("127.0.0.1", 6000)) {
 
-//        Wallet wallet1 = new Wallet();
-//        Wallet wallet2 = new Wallet();
-//        Block firstBlock = new Block(new byte[0]);
-//
-//        LinkedList<Block> blockChain = new LinkedList<>();
-//        System.out.println(wallet1.getBalance(firstBlock.getCurrentBlockChain()));
-//        Block secondBlock = new Block(firstBlock.finalizeBlock(wallet1));
-//        Transaction transaction1 = new Transaction(wallet1,wallet2.getPublicKey().getEncoded(),101);
-//        secondBlock.addTransaction(transaction1);
-//        System.out.println(wallet1.getBalance(wallet1.getBalance(secondBlock.getCurrentBlockChain()),secondBlock.getTransactionLedger()));
-//        Block thirdBlock = new Block(secondBlock.finalizeBlock(wallet1));
-//        System.out.println(wallet1.getBalance(wallet1.getBalance(thirdBlock.getCurrentBlockChain()),thirdBlock.getTransactionLedger()));
-//        thirdBlock.finalizeBlock(wallet1);
-//        for (Block b : thirdBlock.getCurrentBlockChain()) {
-//            System.out.println(b.toString());
-//        }
+            socket.setSoTimeout(5000);
+//            BufferedReader echoes = new BufferedReader(
+//                    new InputStreamReader(socket.getInputStream()));
+//            PrintWriter stringToEcho = new PrintWriter(socket.getOutputStream(), true);
+
+            ObjectOutputStream objectOutput = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream objectInput = new ObjectInputStream(socket.getInputStream());
+
+            Scanner scanner = new Scanner(System.in);
+            String echoString;
+            String response;
+
+//            do {
+            System.out.println("Enter string to be echoed: ");
+//                echoString = scanner.nextLine();
+            Wallet wallet = new Wallet(2048,100);
+            WalletDataNetwork wd = new WalletDataNetwork(wallet.getKeyPair(),wallet.getWalletAddress(),wallet.getKeyPair().hashCode());
+            objectOutput.writeObject(wd);
+
+//                if (!echoString.equals("exit")) {
+//                    response = echoes.readLine();
+//                    System.out.println(response);
+//                }
+//            } while (!echoString.equals("exit"));
+        } catch(SocketTimeoutException e) {
+            System.out.println("The socket timed out");
+        } catch (IOException e) {
+            System.out.println("Client Error: " + e.getMessage());
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
     }
 }
