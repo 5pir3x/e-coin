@@ -1,6 +1,7 @@
 package com.company;
 
 import com.company.Model.Wallet;
+import com.company.NetworkHandlers.Echoer;
 import com.company.ServiceData.BlockData;
 import com.company.ServiceData.WalletData;
 import javafx.application.Application;
@@ -10,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.*;
@@ -20,10 +22,19 @@ public static void main(String[]args){ launch(args); }
 
 @Override
 public void start(Stage primaryStage) throws IOException {
+        try {
+                ServerSocket serverSocket = new ServerSocket(6000);
+//                while(true) {
+                new Echoer(serverSocket.accept()).start();
+//                }
+        } catch(IOException e) {
+                System.out.println("Server exception " + e.getMessage());
+        }
         Parent root = FXMLLoader.load(getClass().getResource("View/MainWindow.fxml"));
         primaryStage.setTitle("E-Coin");
         primaryStage.setScene(new Scene(root, 700, 600));
         primaryStage.show();
+        System.out.println("dododod");
 
         }
 

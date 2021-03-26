@@ -41,8 +41,8 @@ public class PeerContextData implements Serializable {
     public Integer getPort() { return port; }
     public void setPort(Integer port) { this.port = port; }
 
-    public static TreeSet<PeerInfoIO> getValidPeers() { return validPeers; }
-    public static void setValidPeers(TreeSet<PeerInfoIO> validPeers) {
+    public TreeSet<PeerInfoIO> getValidPeers() { return validPeers; }
+    public void setValidPeers(TreeSet<PeerInfoIO> validPeers) {
         PeerContextData.validPeers = validPeers;
     }
 

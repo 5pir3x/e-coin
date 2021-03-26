@@ -4,6 +4,7 @@ import com.company.Model.Block;
 import com.company.Model.Transaction;
 import com.company.Model.Wallet;
 
+import java.io.Serializable;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -15,7 +16,7 @@ import java.sql.*;
 import java.util.Arrays;
 import java.util.LinkedList;
 
-public class WalletData {
+public class WalletData implements Serializable {
 
     private Wallet wallet;
     //singleton class
