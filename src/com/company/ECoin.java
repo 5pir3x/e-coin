@@ -1,6 +1,7 @@
 package com.company;
 
 import com.company.Model.Wallet;
+import com.company.NetworkHandlers.Client;
 import com.company.NetworkHandlers.Echoer;
 import com.company.ServiceData.BlockData;
 import com.company.ServiceData.WalletData;
@@ -22,11 +23,20 @@ public static void main(String[]args){ launch(args); }
 
 @Override
 public void start(Stage primaryStage) throws IOException {
+//        new UI(primaryStage).start();
+        System.out.println("dododod");
         try {
                 ServerSocket serverSocket = new ServerSocket(6000);
 //                while(true) {
-                new Echoer(serverSocket.accept()).start();
+//                        this.wait();
+                       Client client = new Client(6000);
+                       client.start();
+
+//                while(true) {
+                        new Echoer(serverSocket.accept()).start();
+//                this.wait(3000);
 //                }
+//                client.stop();
         } catch(IOException e) {
                 System.out.println("Server exception " + e.getMessage());
         }
