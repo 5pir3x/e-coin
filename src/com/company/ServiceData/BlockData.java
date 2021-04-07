@@ -22,7 +22,6 @@ public class BlockData  {
     private ObservableList<Transaction> newBlockTransactions;
     private LinkedList<Block> currentBlockChain = new LinkedList<>();
     private Block latestBlock;
-    //todo: Make this wallet create itself for each new Block.
 
     //helper class.
     private Signature signing = Signature.getInstance("SHA256withDSA");
