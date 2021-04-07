@@ -23,11 +23,11 @@ public class ECoin extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        new UI(primaryStage).run();
         ServerSocket serverSocket = new ServerSocket(6000);
-        new Client(6000, serverSocket).start();
-        new Echoer(serverSocket.accept(), serverSocket).start();
 
+        new UI().start(primaryStage);
+        new Client(6000).start();
+        new Echoer(serverSocket).start();
     }
 
     @Override
