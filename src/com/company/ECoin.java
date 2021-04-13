@@ -1,15 +1,14 @@
 package com.company;
 
 import com.company.Model.Wallet;
-import com.company.NetworkHandlers.Client;
-import com.company.NetworkHandlers.Echoer;
+import com.company.NetworkHandlers.PeerClient;
+import com.company.NetworkHandlers.PeerServer;
 import com.company.NetworkHandlers.UI;
 import com.company.ServiceData.BlockData;
 import com.company.ServiceData.WalletData;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
-import java.net.ServerSocket;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.*;
@@ -22,12 +21,9 @@ public class ECoin extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-
-        ServerSocket serverSocket = new ServerSocket(6000);
-
         new UI().start(primaryStage);
-        new Client(6000).start();
-        new Echoer(serverSocket).start();
+        new PeerClient(6000).start();
+        new PeerServer(6000).start();
     }
 
     @Override

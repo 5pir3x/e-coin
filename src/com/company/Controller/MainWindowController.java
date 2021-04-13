@@ -39,6 +39,19 @@ public class MainWindowController {
     @FXML
     private TextArea publicKey;
 
+    //singleton class
+    private static MainWindowController instance;
+
+    static {
+        instance = new MainWindowController();
+    }
+    public static MainWindowController getInstance() {
+        return instance;
+    }
+
+    public TableView getTableview() { return tableview; }
+    public void setTableview(TableView tableview) { this.tableview = tableview; }
+
     public void initialize() throws NoSuchAlgorithmException, SQLException, InvalidKeySpecException, UnsupportedEncodingException {
         Base64.Encoder encoder = Base64.getEncoder();
         from.setCellValueFactory(
@@ -88,7 +101,6 @@ public class MainWindowController {
         tableview.getSelectionModel().select(0);
         eCoins.setText(BlockData.getInstance().getWalletBallanceFX());
     }
-
 
     @FXML
     public void handleExit() {

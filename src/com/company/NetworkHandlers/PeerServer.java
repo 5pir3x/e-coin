@@ -5,18 +5,18 @@ import java.io.IOException;
 import java.net.ServerSocket;
 
 
-public class Echoer extends Thread {
+public class PeerServer extends Thread {
 
     private ServerSocket serverSocket;
-    public Echoer(ServerSocket serverSocket) {
-        this.serverSocket = serverSocket;
+    public PeerServer(Integer socketPort) throws IOException {
+        this.serverSocket = new ServerSocket(socketPort);
     }
 
     @Override
     public void run() {
         while (true) {
             try {
-                new EchoerThread(serverSocket.accept()).start();
+                new PeerRequestThread(serverSocket.accept()).start();
             } catch (IOException ex) {
                 ex.printStackTrace();
             }

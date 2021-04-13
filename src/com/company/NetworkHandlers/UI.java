@@ -23,6 +23,7 @@ public class UI extends Application {
         stage.setScene(new Scene(root, 700, 600));
         stage.show();
         System.out.println("dododod");
+
     }
 
 

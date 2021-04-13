@@ -21,17 +21,20 @@ public class WalletData implements Serializable {
     private Wallet wallet;
     //singleton class
     private static WalletData instance;
+
     static {
         instance = new WalletData();
     }
+
     //todo:Make sure this displays correct balance.
     public String getWalletBalanceFX(LinkedList<Block> blockChain) {
         return getBalance(blockChain).toString();
     }
+
     public Integer getBalance(LinkedList<Block> blockChain) {
         Integer balance = 0;
         for (Block block : blockChain) {
-            for ( Transaction transaction : block.getTransactionLedger()) {
+            for (Transaction transaction : block.getTransactionLedger()) {
                 if (Arrays.equals(transaction.getFrom(), wallet.getPublicKey().getEncoded())) {
                     balance -= transaction.getValue();
                 } else if (Arrays.equals(transaction.getTo(), wallet.getPublicKey().getEncoded())) {
@@ -41,9 +44,11 @@ public class WalletData implements Serializable {
         }
         return balance;
     }
-    public static WalletData getInstance(){
+
+    public static WalletData getInstance() {
         return instance;
     }
+
     //This will load your wallet from the database.
     public void loadWallet() throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException {
         Connection walletConnection = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\wallet.db");
@@ -54,12 +59,15 @@ public class WalletData implements Serializable {
         PublicKey pub2 = null;
         PrivateKey prv2 = null;
         while (resultSet.next()) {
-            pub2 = keyFactory.generatePublic (
+            pub2 = keyFactory.generatePublic(
                     new X509EncodedKeySpec(resultSet.getBytes("PUBLIC_KEY")));
             prv2 = keyFactory.generatePrivate(
                     new PKCS8EncodedKeySpec(resultSet.getBytes("PRIVATE_KEY")));
         }
-        this.wallet = new Wallet(pub2,prv2);
+        this.wallet = new Wallet(pub2, prv2);
     }
-    public Wallet getWallet() { return wallet; }
+
+    public Wallet getWallet() {
+        return wallet;
+    }
 }
