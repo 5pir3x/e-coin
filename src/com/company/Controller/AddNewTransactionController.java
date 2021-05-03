@@ -8,6 +8,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
 import java.security.GeneralSecurityException;
+import java.security.NoSuchAlgorithmException;
+import java.security.Signature;
 import java.util.Base64;
 
 public class AddNewTransactionController {
@@ -22,6 +24,10 @@ public class AddNewTransactionController {
     private Integer ledgerId;
 
     Base64.Decoder decoder = Base64.getDecoder();
+    Signature signing = Signature.getInstance("SHA256withDSA");
+
+    public AddNewTransactionController() throws NoSuchAlgorithmException {
+    }
 
     @FXML
     public void createNewTransaction() throws GeneralSecurityException {
@@ -33,7 +39,7 @@ public class AddNewTransactionController {
 
         byte[] sendB = decoder.decode(toAddress.getText());
 
-        Transaction transaction = new Transaction(WalletData.getInstance().getWallet(),sendB ,Integer.parseInt(value.getText()), ledgerId );
+        Transaction transaction = new Transaction(WalletData.getInstance().getWallet(),sendB ,Integer.parseInt(value.getText()), ledgerId, signing );
         BlockData.getInstance().addTransaction(transaction,false);
     }
 }

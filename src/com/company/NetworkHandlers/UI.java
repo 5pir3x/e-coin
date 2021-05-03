@@ -10,7 +10,6 @@ import java.io.IOException;
 
 public class UI extends Application {
 
-
     @Override
     public void start(Stage stage) throws Exception {
         Parent root = null;

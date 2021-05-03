@@ -18,7 +18,7 @@ public class Transaction implements Serializable {
    private byte[] signature;
    private Integer ledgerId;
    //helper class.
-   private Signature signing = Signature.getInstance("SHA256withDSA");
+//   private Signature signing = Signature.getInstance("SHA256withDSA");
 
    //Constructor for loading with existing signature
    public Transaction(byte[] from, byte[] to, Integer value, byte[] signature, Integer ledgerId,String timeStamp) throws NoSuchAlgorithmException {
@@ -30,11 +30,11 @@ public class Transaction implements Serializable {
       this.timeStamp = timeStamp;
    }
 
-   public Transaction (Wallet fromWallet, byte[] toAddress, Integer value, Integer ledgerId) throws InvalidKeyException, SignatureException, NoSuchAlgorithmException {
+   public Transaction (Wallet fromWallet, byte[] toAddress, Integer value, Integer ledgerId, Signature signing) throws InvalidKeyException, SignatureException, NoSuchAlgorithmException {
       this.from = fromWallet.getPublicKey().getEncoded();
       this.to = toAddress;
       this.value = value;
-      this.signing.initSign(fromWallet.getPrivateKey());
+      signing.initSign(fromWallet.getPrivateKey());
       this.ledgerId = ledgerId;
       this.timeStamp = LocalDateTime.now().toString();
       String sr = this.toString();
@@ -43,7 +43,7 @@ public class Transaction implements Serializable {
    }
 
 
-   public Boolean isVerified(Transaction transaction, PublicKey publicKey) throws InvalidKeyException, SignatureException {
+   public Boolean isVerified(Transaction transaction, PublicKey publicKey, Signature signing) throws InvalidKeyException, SignatureException {
       signing.initVerify(publicKey);
       signing.update(transaction.toString().getBytes());
       return signing.verify(signature);
