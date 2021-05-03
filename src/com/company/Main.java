@@ -1,7 +1,6 @@
 package com.company;
 
 import com.company.Model.Wallet;
-import com.company.Model.WalletDataNetwork;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -33,8 +32,8 @@ public class Main {
             System.out.println("Enter string to be echoed: ");
 //                echoString = scanner.nextLine();
             Wallet wallet = new Wallet(2048,100);
-            WalletDataNetwork wd = new WalletDataNetwork(wallet.getKeyPair(),wallet.getWalletAddress(),wallet.getKeyPair().hashCode());
-            objectOutput.writeObject(wd);
+//            WalletDataNetwork wd = new WalletDataNetwork(wallet.getKeyPair(),wallet.getWalletAddress(),wallet.getKeyPair().hashCode());
+            objectOutput.writeObject(wallet);
 
 //                if (!echoString.equals("exit")) {
 //                    response = echoes.readLine();

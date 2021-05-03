@@ -1,6 +1,7 @@
 package com.company;
 
 import com.company.Model.Wallet;
+import com.company.NetworkHandlers.MiningThread;
 import com.company.NetworkHandlers.PeerClient;
 import com.company.NetworkHandlers.PeerServer;
 import com.company.NetworkHandlers.UI;
@@ -24,6 +25,7 @@ public class ECoin extends Application {
         new UI().start(primaryStage);
         new PeerClient(6000).start();
         new PeerServer(6000).start();
+        new MiningThread().start();
     }
 
     @Override
