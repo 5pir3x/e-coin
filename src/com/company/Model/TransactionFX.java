@@ -1,9 +1,8 @@
 package com.company.Model;
 
-import java.io.Serializable;
 import java.util.Base64;
 
-public class TransactionFX  implements Serializable {
+public class TransactionFX {
 
     private String from;
     private String to;

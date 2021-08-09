@@ -1,14 +1,11 @@
 package com.company.Model;
 
 import java.io.Serializable;
-import java.security.GeneralSecurityException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 
 public class Block implements Serializable {
-
 
     private byte[] prevHash;
     private byte[] currHash;
@@ -16,11 +13,13 @@ public class Block implements Serializable {
     private byte[] minedBy;
     private Integer ledgerId = 0;
     private Integer miningPoints = 0;
-    private Double luck;
+    private Double luck = 0.0;
+
     private ArrayList<Transaction> transactionLedger = new ArrayList<>();
 
     //This constructor is used when we retrieve it from the db
-    public Block(byte[] prevHash, byte[] currHash, String timeStamp, byte[] minedBy,Integer ledgerId, Integer miningPoints, Double luck, ArrayList<Transaction> transactionLedger) throws NoSuchAlgorithmException {
+    public Block(byte[] prevHash, byte[] currHash, String timeStamp, byte[] minedBy,Integer ledgerId,
+                 Integer miningPoints, Double luck, ArrayList<Transaction> transactionLedger) {
         this.prevHash = prevHash;
         this.currHash = currHash;
         this.timeStamp = timeStamp;
@@ -31,11 +30,15 @@ public class Block implements Serializable {
         this.luck = luck;
     }
     //This constructor is used when we initiate it after retrieve.
-    public Block(LinkedList<Block> currentBlockChain) throws GeneralSecurityException {
+    public Block(LinkedList<Block> currentBlockChain) {
         Block lastBlock = currentBlockChain.getLast();
         prevHash = lastBlock.getCurrHash();
         ledgerId = lastBlock.getLedgerId() + 1;
         luck = Math.random() * 1000000;
+    }
+    //This constructor is used only for creating the first block in the blockchain.
+    public Block() {
+        prevHash = new byte[]{0};
     }
 
     public byte[] getPrevHash() { return prevHash; }
@@ -45,7 +48,9 @@ public class Block implements Serializable {
     public void setCurrHash(byte[] currHash) { this.currHash = currHash; }
 
     public ArrayList<Transaction> getTransactionLedger() { return transactionLedger; }
-    public void setTransactionLedger(ArrayList<Transaction> transactionLedger) { this.transactionLedger = transactionLedger; }
+    public void setTransactionLedger(ArrayList<Transaction> transactionLedger) {
+        this.transactionLedger = transactionLedger;
+    }
 
     public String getTimeStamp() { return timeStamp; }
     public void setMinedBy(byte[] minedBy) { this.minedBy = minedBy; }
@@ -67,9 +72,11 @@ public class Block implements Serializable {
         return "Block{" +
                 "prevHash=" + Arrays.toString(prevHash) +
                 ", currHash=" + Arrays.toString(currHash) +
-                ", transactionLedger=" + transactionLedger.toString() +
-                ", timeStamp=" + timeStamp.toString() +
+                ", timeStamp='" + timeStamp + '\'' +
                 ", minedBy=" + Arrays.toString(minedBy) +
+                ", ledgerId=" + ledgerId +
+                ", miningPoints=" + miningPoints +
+                ", luck=" + luck +
                 '}';
     }
 }

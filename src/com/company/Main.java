@@ -31,7 +31,7 @@ public class Main {
 //            do {
             System.out.println("Enter string to be echoed: ");
 //                echoString = scanner.nextLine();
-            Wallet wallet = new Wallet(2048,100);
+            Wallet wallet = new Wallet();
 //            WalletDataNetwork wd = new WalletDataNetwork(wallet.getKeyPair(),wallet.getWalletAddress(),wallet.getKeyPair().hashCode());
             objectOutput.writeObject(wallet);
 
