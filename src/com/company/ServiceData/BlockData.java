@@ -26,7 +26,6 @@ public class BlockData {
     //helper class.
     private Signature signing = Signature.getInstance("SHA256withDSA");
 
-
     //singleton class
     private static BlockData instance;
 
@@ -65,7 +64,7 @@ public class BlockData {
             ArrayList<Transaction> transactions = block.getTransactionLedger();
 //            transactions.sort(transactionComparator);
             for (Transaction transaction : transactions) {
-                if (!transaction.isVerified(transaction, new DSAPublicKeyImpl(transaction.getFrom()), signing)) {
+                if (!transaction.isVerified(transaction, signing)) {
                     throw new GeneralSecurityException("Blockchain validation failed");
                 }
             }
@@ -171,7 +170,7 @@ public class BlockData {
             }
 
             latestBlock = currentBlockChain.getLast();
-            Transaction transaction = new Transaction(new Wallet(2048, 100), WalletData.getInstance().getWallet().getPublicKey().getEncoded(), 100, latestBlock.getLedgerId() + 1,signing);
+            Transaction transaction = new Transaction(new Wallet(), WalletData.getInstance().getWallet().getPublicKey().getEncoded(), 100, latestBlock.getLedgerId() + 1,signing);
 //            transactions.add(transaction);
             newBlockTransactions.addAll(transaction);
             newBlockTransactions.sort(transactionComparator);
@@ -206,7 +205,7 @@ public class BlockData {
                 ));
             }
             if (transactions.isEmpty()) {
-                Transaction transaction = new Transaction(new Wallet(2048, 100), WalletData.getInstance().getWallet().getPublicKey().getEncoded(), 100, ledgerID + 1,signing);
+                Transaction transaction = new Transaction(new Wallet(), WalletData.getInstance().getWallet().getPublicKey().getEncoded(), 100, ledgerID + 1,signing);
                 transactions.add(transaction);
             }
             resultSet.close();
@@ -226,7 +225,7 @@ public class BlockData {
     public void mineBlock() {
 
         try {
-            finalizeBlock(WalletData.getInstance().getWallet(), new Wallet(2048, 100));
+            finalizeBlock(WalletData.getInstance().getWallet(), new Wallet());
 
             Connection connection = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\ecointest2.db");
             PreparedStatement pstmt;
@@ -236,7 +235,7 @@ public class BlockData {
             pstmt.setBytes(2, latestBlock.getCurrHash());
             pstmt.setInt(3, latestBlock.getLedgerId());
             pstmt.setString(4, latestBlock.getTimeStamp());
-            pstmt.setBytes(5, WalletData.getInstance().getWallet().getPublicKey().getEncoded());
+            pstmt.setBytes(5, latestBlock.getMinedBy());
             pstmt.setInt(6, latestBlock.getMiningPoints());
             pstmt.setDouble(7, latestBlock.getLuck());
             pstmt.executeUpdate();
@@ -257,46 +256,24 @@ public class BlockData {
         boolean rewardTransaction = true;
         for (Transaction trans : latestBlock.getTransactionLedger()) {
             //todo:reenable these checks when add trans is ready
-            if (trans.isVerified(trans, new DSAPublicKeyImpl(trans.getFrom()),signing) && getBalance(currentBlockChain, FXCollections.observableArrayList(latestBlock.getTransactionLedger()), new DSAPublicKeyImpl(trans.getFrom())) >= 0 || rewardTransaction) {
+            if (trans.isVerified(trans,signing) && getBalance(currentBlockChain, FXCollections.observableArrayList(latestBlock.getTransactionLedger()), new DSAPublicKeyImpl(trans.getFrom())) >= 0 || rewardTransaction) {
                 latestBlock.setCurrHash((Arrays.toString(latestBlock.getPrevHash()) + Arrays.toString(trans.getSignature())).getBytes());
                 rewardTransaction = false;
             } else {
                 throw new GeneralSecurityException("Block transactions validation failed");
             }
         }
-        signing.initSign(minersWallet.getPrivateKey());
-        signing.update(latestBlock.getCurrHash());
-        latestBlock.setCurrHash(signing.sign());
         latestBlock.setTimeStamp(LocalDateTime.now().toString());
         latestBlock.setMinedBy(minersWallet.getPublicKey().getEncoded());
+        signing.initSign(minersWallet.getPrivateKey());
+        signing.update(latestBlock.toString().getBytes());
+        latestBlock.setCurrHash(signing.sign());
         currentBlockChain.add(latestBlock);
         //Reward transaction
         addTransaction(latestBlock.getTransactionLedger().get(0), true);
         Transaction transaction = new Transaction(blockRewardWallet, minersWallet.getPublicKey().getEncoded(), 100, latestBlock.getLedgerId() + 1, signing);
-//        Connection connection = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\ecointest2.db");
-//        try {
-//            PreparedStatement pstmt = connection.prepareStatement(" INSERT INTO TRANSACTIONS(\"FROM\", \"TO\", LEDGER_ID, VALUE, SIGNATURE, CREATED_ON) " +
-//                    " VALUES (?,?,?,?,?,?) ");
-//            pstmt.setBytes(1, transaction.getFrom());
-//            pstmt.setBytes(2, transaction.getTo());
-//            pstmt.setInt(3, transaction.getLedgerId());
-//            pstmt.setInt(4,100);
-//            pstmt.setBytes(5,transaction.getSignature());
-//            pstmt.setString(6,transaction.getTimeStamp());
-//            pstmt.executeUpdate();
-//            newBlockTransactions.clear();
-//            newBlockTransactions.add(transaction);
-//            pstmt.close();
-//            connection.close();
-//        } catch (SQLException e) {
-//            System.out.println("Problem with DB: " + e.getMessage());
-//            e.printStackTrace();
-//        }
-
         newBlockTransactions.clear();
         newBlockTransactions.add(transaction);
-//        addBlockRewardTransaction(transaction);
-
     }
 
     public LinkedList<Block> getCurrentBlockChain() {

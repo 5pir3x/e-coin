@@ -1,27 +1,27 @@
 package com.company.Model;
 
+import sun.security.provider.DSAPublicKeyImpl;
+
 import java.io.Serializable;
-import java.security.*;
+import java.security.InvalidKeyException;
+import java.security.Signature;
+import java.security.SignatureException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
 public class Transaction implements Serializable {
 
-   //my public key - my wallet address
    private byte[] from;
-   //your public key - your wallet address
    private byte[] to;
-   //value to be transferred
    private Integer value;
    private String timeStamp;
-   //encrypted with my private key
    private byte[] signature;
    private Integer ledgerId;
-   //helper class.
-//   private Signature signing = Signature.getInstance("SHA256withDSA");
+
 
    //Constructor for loading with existing signature
-   public Transaction(byte[] from, byte[] to, Integer value, byte[] signature, Integer ledgerId,String timeStamp) throws NoSuchAlgorithmException {
+   public Transaction(byte[] from, byte[] to, Integer value, byte[] signature, Integer ledgerId,
+                      String timeStamp) {
       this.from = from;
       this.to = to;
       this.value = value;
@@ -29,22 +29,23 @@ public class Transaction implements Serializable {
       this.ledgerId = ledgerId;
       this.timeStamp = timeStamp;
    }
-
-   public Transaction (Wallet fromWallet, byte[] toAddress, Integer value, Integer ledgerId, Signature signing) throws InvalidKeyException, SignatureException, NoSuchAlgorithmException {
+   //Constructor for creating a new transaction and signing it.
+   public Transaction (Wallet fromWallet, byte[] toAddress, Integer value, Integer ledgerId,
+                       Signature signing) throws InvalidKeyException, SignatureException {
       this.from = fromWallet.getPublicKey().getEncoded();
       this.to = toAddress;
       this.value = value;
-      signing.initSign(fromWallet.getPrivateKey());
       this.ledgerId = ledgerId;
       this.timeStamp = LocalDateTime.now().toString();
+      signing.initSign(fromWallet.getPrivateKey());
       String sr = this.toString();
       signing.update(sr.getBytes());
       this.signature = signing.sign();
    }
 
-
-   public Boolean isVerified(Transaction transaction, PublicKey publicKey, Signature signing) throws InvalidKeyException, SignatureException {
-      signing.initVerify(publicKey);
+   public Boolean isVerified(Transaction transaction, Signature signing)
+           throws InvalidKeyException, SignatureException {
+      signing.initVerify(new DSAPublicKeyImpl(transaction.getFrom()));
       signing.update(transaction.toString().getBytes());
       return signing.verify(signature);
    }

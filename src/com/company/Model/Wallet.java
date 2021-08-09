@@ -6,35 +6,23 @@ import java.security.*;
 public class Wallet implements Serializable {
 
     private KeyPair keyPair;
-    private PublicKey walletAddress;
-    private Integer balance = 0;
-
 
     //Constructors for generating new KeyPair
     public Wallet() throws NoSuchAlgorithmException {
-        this(2048,KeyPairGenerator.getInstance("DSA"));
+        this(2048, KeyPairGenerator.getInstance("DSA"));
     }
     public Wallet(Integer keySize, KeyPairGenerator keyPairGen) {
        keyPairGen.initialize(keySize);
        this.keyPair = keyPairGen.generateKeyPair();
-       this.walletAddress = keyPair.getPublic();
     }
-    //Constructor for Block wallet.
-    public Wallet(Integer keySize,Integer blockBalance) throws NoSuchAlgorithmException {
-     this(keySize,KeyPairGenerator.getInstance("DSA"));
-        balance = blockBalance;
-    }
+
     //Constructor for importing Keys only
     public Wallet(PublicKey publicKey, PrivateKey privateKey) {
         this.keyPair = new KeyPair(publicKey,privateKey);
-        this.walletAddress = keyPair.getPublic();
     }
 
     public KeyPair getKeyPair() { return keyPair; }
 
     public PublicKey getPublicKey() { return keyPair.getPublic(); }
     public PrivateKey getPrivateKey() { return keyPair.getPrivate(); }
-
-
-    public PublicKey getWalletAddress() { return walletAddress; }
 }
