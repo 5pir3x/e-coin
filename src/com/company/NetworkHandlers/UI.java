@@ -11,7 +11,7 @@ import java.io.IOException;
 public class UI extends Application {
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         Parent root = null;
         try {
             root = FXMLLoader.load(getClass().getResource("../View/MainWindow.fxml"));
@@ -19,11 +19,8 @@ public class UI extends Application {
             e.printStackTrace();
         }
         stage.setTitle("E-Coin");
-        stage.setScene(new Scene(root, 700, 600));
+        stage.setScene(new Scene(root, 900, 700));
         stage.show();
         System.out.println("dododod");
-
     }
-
-
 }

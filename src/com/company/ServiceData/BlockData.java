@@ -22,7 +22,7 @@ public class BlockData {
     private ObservableList<Transaction> newBlockTransactions;
     private LinkedList<Block> currentBlockChain = new LinkedList<>();
     private Block latestBlock;
-
+    private String walletBalance;
     //helper class.
     private Signature signing = Signature.getInstance("SHA256withDSA");
 
@@ -56,7 +56,8 @@ public class BlockData {
     }
 
     public String getWalletBallanceFX() {
-        return getBalance(currentBlockChain, newBlockTransactions, WalletData.getInstance().getWallet().getPublicKey()).toString();
+        walletBalance = getBalance(currentBlockChain, newBlockTransactions, WalletData.getInstance().getWallet().getPublicKey()).toString();
+        return walletBalance;
     }
 
     private void verifyBlockChain(LinkedList<Block> currentBlockChain) throws GeneralSecurityException {

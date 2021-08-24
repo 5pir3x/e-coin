@@ -2,6 +2,7 @@ package com.company.NetworkHandlers;
 
 import com.company.NetworkDataModel.BlockChainNetworkData;
 import com.company.ServiceData.BlockData;
+import javafx.application.Platform;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -35,7 +36,9 @@ public class PeerClient extends Thread {
                 objectOutput.writeObject(blockChain);
                 System.out.println(((String) objectInput.readObject()));
                 Thread.sleep(2000);
-
+                if (!Platform.isImplicitExit()) {
+                    System.out.println("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
+                }
             } catch (SocketTimeoutException e) {
                 System.out.println("The socket timed out");
             } catch (IOException e) {
