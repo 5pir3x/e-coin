@@ -1,11 +1,9 @@
 package com.company.Controller;
 
-import com.company.Model.Transaction;
 import com.company.Model.TransactionFX;
 import com.company.ServiceData.BlockData;
 import com.company.ServiceData.WalletData;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
@@ -19,41 +17,23 @@ import java.util.Optional;
 public class MainWindowController {
 
     @FXML
-    public TableView tableview = new TableView<>(); //this is read-only UI table
+    public TableView<TransactionFX> tableview = new TableView<>(); //this is read-only UI table
     @FXML
-    private TableColumn<Transaction, String> from;
+    private TableColumn<TransactionFX, String> from;
     @FXML
-    private TableColumn<Transaction, String> to;
+    private TableColumn<TransactionFX, String> to;
     @FXML
-    private TableColumn<Transaction, Integer> value;
+    private TableColumn<TransactionFX, Integer> value;
     @FXML
-    private TableColumn<Transaction, String> timestamp;
+    private TableColumn<TransactionFX, String> timestamp;
     @FXML
-    private TableColumn<Transaction, String> signature;
+    private TableColumn<TransactionFX, String> signature;
     @FXML
     private BorderPane borderPane;
     @FXML
-    public TextField eCoins;
+    private TextField eCoins;
     @FXML
     private TextArea publicKey;
-
-    //singleton class
-    private static MainWindowController instance;
-
-    static {
-        instance = new MainWindowController();
-    }
-    public static MainWindowController getInstance() {
-        return instance;
-    }
-
-    public TableView getTableview() { return tableview; }
-
-    public void setTableview(ObservableList<TransactionFX> items,String balance) {
-        tableview.setItems(items);
-        tableview.getSelectionModel().select(0);
-//        eCoins.setText(balance);
-    }
 
     public void initialize() {
         Base64.Encoder encoder = Base64.getEncoder();
@@ -86,26 +66,24 @@ public class MainWindowController {
             e.printStackTrace();
             return;
         }
-        newTransactionController.getDialogPane().getButtonTypes().add(ButtonType.OK);
-        newTransactionController.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
-
+        newTransactionController.getDialogPane().getButtonTypes().add(ButtonType.FINISH);
         Optional<ButtonType> result = newTransactionController.showAndWait();
         if (result.isPresent() ) {
             tableview.setItems(BlockData.getInstance().getTransactionLedgerFX());
             eCoins.setText(BlockData.getInstance().getWalletBallanceFX());
         }
     }
+
     @FXML
-    public void mineBlock() {
-        BlockData.getInstance().mineBlock();
+    public void refresh() {
         tableview.setItems(BlockData.getInstance().getTransactionLedgerFX());
         tableview.getSelectionModel().select(0);
-        eCoins.setText(WalletData.getInstance().getWalletBalanceFX(BlockData.getInstance().getCurrentBlockChain()));
+        eCoins.setText(BlockData.getInstance().getWalletBallanceFX());
     }
 
     @FXML
     public void handleExit() {
-        Platform.setImplicitExit(false);
+        BlockData.getInstance().setExit(true);
         Platform.exit();
     }
 }

@@ -23,6 +23,7 @@ public class BlockData {
     private LinkedList<Block> currentBlockChain = new LinkedList<>();
     private Block latestBlock;
     private String walletBalance;
+    private boolean exit = false;
     //helper class.
     private Signature signing = Signature.getInstance("SHA256withDSA");
 
@@ -298,6 +299,8 @@ public class BlockData {
         public int compare(Transaction t1, Transaction t2) {
             return t1.getTimeStamp().compareTo(t2.getTimeStamp());
         }
-
     };
+
+    public boolean isExit() { return exit; }
+    public void setExit(boolean exit) { this.exit = exit; }
 }

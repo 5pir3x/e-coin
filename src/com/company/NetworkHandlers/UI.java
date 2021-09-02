@@ -21,6 +21,5 @@ public class UI extends Application {
         stage.setTitle("E-Coin");
         stage.setScene(new Scene(root, 900, 700));
         stage.show();
-        System.out.println("dododod");
     }
 }
