@@ -12,7 +12,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.company.Controller.MainWindowController">
+<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.company.Controller.MainWindowController">
     <top>
         <MenuBar prefHeight="25.0" prefWidth="800.0" BorderPane.alignment="CENTER">
             <menus>
@@ -64,7 +66,8 @@
          <right>
             <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <children>
-                <Button layoutX="113.0" layoutY="20.0" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT" onAction="#mineBlock" prefHeight="30.0" prefWidth="67.0" text="Refresh" textAlignment="CENTER" />
+                <Button layoutX="113.0" layoutY="20.0" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT" onAction="#refresh" prefHeight="30.0"
+                        prefWidth="67.0" text="Refresh" textAlignment="CENTER" />
                </children>
             </AnchorPane>
          </right>

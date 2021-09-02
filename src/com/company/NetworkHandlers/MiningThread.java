@@ -1,6 +1,5 @@
 package com.company.NetworkHandlers;
 
-import com.company.Controller.MainWindowController;
 import com.company.NetworkDataModel.BlockChainNetworkData;
 import com.company.ServiceData.BlockData;
 import javafx.application.Platform;
@@ -25,7 +24,7 @@ public class MiningThread extends Thread {
                 Platform.runLater(() -> {
                     BlockData.getInstance().mineBlock();
                     BlockData.getInstance().getWalletBallanceFX();
-                    MainWindowController.getInstance().setTableview(BlockData.getInstance().getTransactionLedgerFX(),BlockData.getInstance().getWalletBallanceFX());
+//                    MainWindowController.getInstance().setTableview(BlockData.getInstance().getTransactionLedgerFX(),BlockData.getInstance().getWalletBallanceFX());
 //                    MainWindowController.getInstance().setTableview(BlockData.getInstance().getTransactionLedgerFX(),BlockData.getInstance().getWalletBallanceFX());
                     System.out.println(BlockData.getInstance().getWalletBallanceFX());
 //                    MainWindowController.getInstance().setTableview(BlockData.getInstance().getTransactionLedgerFX());

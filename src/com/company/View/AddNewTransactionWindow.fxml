@@ -20,7 +20,7 @@
                         <Font size="18.0" />
                     </font>
                 </Label>
-                <Button fx:id="sendTransaction" layoutX="447.0" layoutY="189.0" mnemonicParsing="false" onAction="#createNewTransaction" text="Send Transaction" />
+                <Button layoutX="447.0" layoutY="189.0" mnemonicParsing="false" onAction="#createNewTransaction" text="Send Transaction" />
             </children>
         </AnchorPane>
     </content>
