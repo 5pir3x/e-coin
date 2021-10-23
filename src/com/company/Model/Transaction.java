@@ -77,4 +77,18 @@ public class Transaction implements Serializable {
    public String getTimeStamp() {
       return timeStamp;
    }
+
+   @Override
+   public boolean equals(Object o) {
+      if (this == o) return true;
+      if (!(o instanceof Transaction)) return false;
+      Transaction that = (Transaction) o;
+      return Arrays.equals(getSignature(), that.getSignature());
+   }
+
+   @Override
+   public int hashCode() {
+      return Arrays.hashCode(getSignature());
+   }
+
 }

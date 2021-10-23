@@ -47,7 +47,7 @@ public class MainWindowController {
                 new PropertyValueFactory<>("signature"));
         timestamp.setCellValueFactory(
                 new PropertyValueFactory<>("timestamp"));
-        eCoins.setText(WalletData.getInstance().getWalletBalanceFX(BlockData.getInstance().getCurrentBlockChain()));
+        eCoins.setText(BlockData.getInstance().getWalletBallanceFX());
         publicKey.setText(encoder.encodeToString(WalletData.getInstance().getWallet().getPublicKey().getEncoded()));
         tableview.setItems(BlockData.getInstance().getTransactionLedgerFX());
         tableview.getSelectionModel().select(0);

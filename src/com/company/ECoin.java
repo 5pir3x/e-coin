@@ -1,6 +1,7 @@
 package com.company;
 
 import com.company.Model.Block;
+import com.company.Model.Transaction;
 import com.company.Model.Wallet;
 import com.company.NetworkHandlers.MiningThread;
 import com.company.NetworkHandlers.PeerClient;
@@ -11,11 +12,7 @@ import com.company.ServiceData.WalletData;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.Signature;
-import java.security.SignatureException;
-import java.security.spec.InvalidKeySpecException;
+import java.security.*;
 import java.sql.*;
 import java.time.LocalDateTime;
 
@@ -28,13 +25,13 @@ public class ECoin extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         new UI().start(primaryStage);
-        new PeerClient(6000).start();
+        new PeerClient(6001).start();
         new PeerServer(6000).start();
         new MiningThread().start();
     }
 
     @Override
-    public void init() throws InvalidKeySpecException {
+    public void init() {
         try {
             //This creates your wallet if there is none and gives you a KeyPair.
             //We will create it in separate db for better security and ease of portability.
@@ -81,6 +78,7 @@ public class ECoin extends Application {
                     ")"
             );
             ResultSet resultSetBlockchain = blockchainStmt.executeQuery(" SELECT * FROM BLOCKCHAIN ");
+            Transaction initBlockRewardTransaction = null;
             if (!resultSetBlockchain.next()) {
                 Block firstBlock = new Block();
                 firstBlock.setMinedBy(WalletData.getInstance().getWallet().getPublicKey().getEncoded());
@@ -102,6 +100,8 @@ public class ECoin extends Application {
                 pstmt.setInt(6, firstBlock.getMiningPoints());
                 pstmt.setDouble(7, firstBlock.getLuck());
                 pstmt.executeUpdate();
+                Signature transSignature = Signature.getInstance("SHA256withDSA");
+                initBlockRewardTransaction = new Transaction(WalletData.getInstance().getWallet(),WalletData.getInstance().getWallet().getPublicKey().getEncoded(),100,1,transSignature);
             }
             resultSetBlockchain.close();
 
@@ -111,15 +111,20 @@ public class ECoin extends Application {
                     " \"TO\" BLOB, " +
                     " LEDGER_ID INTEGER, " +
                     " VALUE INTEGER, " +
-                    " SIGNATURE BLOB, " +
+                    " SIGNATURE BLOB UNIQUE, " +
                     " CREATED_ON TEXT, " +
                     " PRIMARY KEY(ID AUTOINCREMENT) " +
                     ")"
             );
+            if (initBlockRewardTransaction != null) {
+                BlockData.getInstance().addTransaction(initBlockRewardTransaction,true);
+            }
             blockchainStmt.close();
             blockchainConnection.close();
         } catch (SQLException | NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
             System.out.println("db failed: " + e.getMessage());
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
         }
         BlockData.getInstance().loadBlockChain();
     }
