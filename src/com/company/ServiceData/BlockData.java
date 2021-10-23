@@ -359,7 +359,7 @@ public class BlockData {
                     }
                 }
                 //if only the transaction ledgers are different then combine them.
-            } else if (recievedBC.getLast().getTransactionLedger().equals(getCurrentBlockChain().getLast().getTransactionLedger())) {
+            } else if (!recievedBC.getLast().getTransactionLedger().equals(getCurrentBlockChain().getLast().getTransactionLedger())) {
                 for (Transaction transaction : recievedBC.getLast().getTransactionLedger()) {
                     if (!getCurrentBlockChain().getLast().getTransactionLedger().contains(transaction)) {
                         getCurrentBlockChain().getLast().getTransactionLedger().add(transaction);
