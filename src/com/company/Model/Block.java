@@ -1,6 +1,11 @@
 package com.company.Model;
 
+import sun.security.provider.DSAPublicKeyImpl;
+
 import java.io.Serializable;
+import java.security.InvalidKeyException;
+import java.security.Signature;
+import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -11,7 +16,7 @@ public class Block implements Serializable {
     private byte[] currHash;
     private String timeStamp;
     private byte[] minedBy;
-    private Integer ledgerId = 0;
+    private Integer ledgerId = 1;
     private Integer miningPoints = 0;
     private Double luck = 0.0;
 
@@ -39,6 +44,26 @@ public class Block implements Serializable {
     //This constructor is used only for creating the first block in the blockchain.
     public Block() {
         prevHash = new byte[]{0};
+    }
+
+    public Boolean isVerified(Signature signing)
+            throws InvalidKeyException, SignatureException {
+        signing.initVerify(new DSAPublicKeyImpl(this.minedBy));
+        signing.update(this.toString().getBytes());
+        return signing.verify(this.currHash);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Block)) return false;
+        Block block = (Block) o;
+        return Arrays.equals(getPrevHash(), block.getPrevHash());
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(getPrevHash());
     }
 
     public byte[] getPrevHash() { return prevHash; }
@@ -71,7 +96,6 @@ public class Block implements Serializable {
     public String toString() {
         return "Block{" +
                 "prevHash=" + Arrays.toString(prevHash) +
-                ", currHash=" + Arrays.toString(currHash) +
                 ", timeStamp='" + timeStamp + '\'' +
                 ", minedBy=" + Arrays.toString(minedBy) +
                 ", ledgerId=" + ledgerId +

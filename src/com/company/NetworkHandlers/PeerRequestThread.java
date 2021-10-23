@@ -1,12 +1,14 @@
 package com.company.NetworkHandlers;
 
 
-import com.company.NetworkDataModel.BlockChainNetworkData;
+import com.company.Model.Block;
+import com.company.ServiceData.BlockData;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.LinkedList;
 
 
 public class PeerRequestThread extends Thread {
@@ -23,13 +25,11 @@ public class PeerRequestThread extends Thread {
             ObjectOutputStream objectOutput = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream objectInput = new ObjectInputStream(socket.getInputStream());
 
-//                WalletDataNetwork walletDataNetwork = (WalletDataNetwork) objectInput.readObject();
-                BlockChainNetworkData bdn = (BlockChainNetworkData) objectInput.readObject();
-                System.out.println("LedgerId = " + bdn.getCurrentBlockChain().getLast().getLedgerId() + " balance= " + bdn.getCurrentBlockChain().getLast().getTransactionLedger().get(0).getValue() + " Size= " + bdn.getCurrentBlockChain().getLast().getTransactionLedger().size());
-            objectOutput.writeObject("123456");
+            LinkedList<Block> recievedBC = (LinkedList<Block>) objectInput.readObject();
+            System.out.println("LedgerId = " + recievedBC.getLast().getLedgerId()  + " Size= " + recievedBC.getLast().getTransactionLedger().size());
+           objectOutput.writeObject(BlockData.getInstance().getBlockchainConsensus(recievedBC));
         } catch (IOException | ClassNotFoundException ex) {
             ex.printStackTrace();
         }
     }
-
 }
