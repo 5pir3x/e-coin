@@ -1,4 +1,4 @@
-package com.company.NetworkHandlers;
+package com.company.Threads;
 
 
 import java.io.IOException;

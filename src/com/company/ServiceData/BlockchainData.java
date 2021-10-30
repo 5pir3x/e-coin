@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedList;
 
-public class BlockData {
+public class BlockchainData {
 
     private ObservableList<TransactionFX> newBlockTransactionsFX;
     private ObservableList<Transaction> newBlockTransactions;
@@ -30,22 +30,22 @@ public class BlockData {
     private Signature signing = Signature.getInstance("SHA256withDSA");
 
     //singleton class
-    private static BlockData instance;
+    private static BlockchainData instance;
 
     static {
         try {
-            instance = new BlockData();
+            instance = new BlockchainData();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
     }
 
-    public BlockData() throws NoSuchAlgorithmException {
+    public BlockchainData() throws NoSuchAlgorithmException {
         newBlockTransactions = FXCollections.observableArrayList();
         newBlockTransactionsFX = FXCollections.observableArrayList();
     }
 
-    public static BlockData getInstance() {
+    public static BlockchainData getInstance() {
         return instance;
     }
 
@@ -208,7 +208,7 @@ public class BlockData {
     }
 
     private void finalizeBlock(Wallet minersWallet, Wallet blockRewardWallet) throws GeneralSecurityException, SQLException {
-        latestBlock = new Block(BlockData.getInstance().currentBlockChain);
+        latestBlock = new Block(BlockchainData.getInstance().currentBlockChain);
         latestBlock.setTransactionLedger(new ArrayList<>(newBlockTransactions));
         latestBlock.setCurrHash(latestBlock.getPrevHash());
         boolean rewardTransaction = true;
@@ -337,7 +337,7 @@ public class BlockData {
                                 }
                                 recievedBC.getLast().getTransactionLedger().sort(transactionComparator);
                                 //we are returning the mining points since our local block lost.
-                                setMiningPoints(BlockData.getInstance().getMiningPoints() + getCurrentBlockChain().getLast().getMiningPoints());
+                                setMiningPoints(BlockchainData.getInstance().getMiningPoints() + getCurrentBlockChain().getLast().getMiningPoints());
                                 setCurrentBlockChain(recievedBC);
                                 addReceivedBlockChainToDB(recievedBC);
                                 System.out.println("Received blockchain won!");

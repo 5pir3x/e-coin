@@ -1,4 +1,4 @@
-package com.company.NetworkHandlers;
+package com.company.Threads;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
