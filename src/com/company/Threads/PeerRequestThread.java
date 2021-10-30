@@ -1,8 +1,8 @@
-package com.company.NetworkHandlers;
+package com.company.Threads;
 
 
 import com.company.Model.Block;
-import com.company.ServiceData.BlockData;
+import com.company.ServiceData.BlockchainData;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -12,6 +12,7 @@ import java.util.LinkedList;
 
 
 public class PeerRequestThread extends Thread {
+
     private Socket socket;
 
     public PeerRequestThread(Socket socket) {
@@ -26,8 +27,9 @@ public class PeerRequestThread extends Thread {
             ObjectInputStream objectInput = new ObjectInputStream(socket.getInputStream());
 
             LinkedList<Block> recievedBC = (LinkedList<Block>) objectInput.readObject();
-            System.out.println("LedgerId = " + recievedBC.getLast().getLedgerId()  + " Size= " + recievedBC.getLast().getTransactionLedger().size());
-           objectOutput.writeObject(BlockData.getInstance().getBlockchainConsensus(recievedBC));
+            System.out.println("LedgerId = " + recievedBC.getLast().getLedgerId()  +
+                    " Size= " + recievedBC.getLast().getTransactionLedger().size());
+           objectOutput.writeObject(BlockchainData.getInstance().getBlockchainConsensus(recievedBC));
         } catch (IOException | ClassNotFoundException ex) {
             ex.printStackTrace();
         }

@@ -1,7 +1,7 @@
 package com.company.Controller;
 
 import com.company.Model.TransactionFX;
-import com.company.ServiceData.BlockData;
+import com.company.ServiceData.BlockchainData;
 import com.company.ServiceData.WalletData;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -47,9 +47,9 @@ public class MainWindowController {
                 new PropertyValueFactory<>("signature"));
         timestamp.setCellValueFactory(
                 new PropertyValueFactory<>("timestamp"));
-        eCoins.setText(BlockData.getInstance().getWalletBallanceFX());
+        eCoins.setText(BlockchainData.getInstance().getWalletBallanceFX());
         publicKey.setText(encoder.encodeToString(WalletData.getInstance().getWallet().getPublicKey().getEncoded()));
-        tableview.setItems(BlockData.getInstance().getTransactionLedgerFX());
+        tableview.setItems(BlockchainData.getInstance().getTransactionLedgerFX());
         tableview.getSelectionModel().select(0);
     }
 
@@ -69,21 +69,21 @@ public class MainWindowController {
         newTransactionController.getDialogPane().getButtonTypes().add(ButtonType.FINISH);
         Optional<ButtonType> result = newTransactionController.showAndWait();
         if (result.isPresent() ) {
-            tableview.setItems(BlockData.getInstance().getTransactionLedgerFX());
-            eCoins.setText(BlockData.getInstance().getWalletBallanceFX());
+            tableview.setItems(BlockchainData.getInstance().getTransactionLedgerFX());
+            eCoins.setText(BlockchainData.getInstance().getWalletBallanceFX());
         }
     }
 
     @FXML
     public void refresh() {
-        tableview.setItems(BlockData.getInstance().getTransactionLedgerFX());
+        tableview.setItems(BlockchainData.getInstance().getTransactionLedgerFX());
         tableview.getSelectionModel().select(0);
-        eCoins.setText(BlockData.getInstance().getWalletBallanceFX());
+        eCoins.setText(BlockchainData.getInstance().getWalletBallanceFX());
     }
 
     @FXML
     public void handleExit() {
-        BlockData.getInstance().setExit(true);
+        BlockchainData.getInstance().setExit(true);
         Platform.exit();
     }
 }

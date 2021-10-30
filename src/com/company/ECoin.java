@@ -3,11 +3,11 @@ package com.company;
 import com.company.Model.Block;
 import com.company.Model.Transaction;
 import com.company.Model.Wallet;
-import com.company.NetworkHandlers.MiningThread;
-import com.company.NetworkHandlers.PeerClient;
-import com.company.NetworkHandlers.PeerServer;
-import com.company.NetworkHandlers.UI;
-import com.company.ServiceData.BlockData;
+import com.company.Threads.MiningThread;
+import com.company.Threads.PeerClient;
+import com.company.Threads.PeerServer;
+import com.company.Threads.UI;
+import com.company.ServiceData.BlockchainData;
 import com.company.ServiceData.WalletData;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -117,7 +117,7 @@ public class ECoin extends Application {
                     ")"
             );
             if (initBlockRewardTransaction != null) {
-                BlockData.getInstance().addTransaction(initBlockRewardTransaction,true);
+                BlockchainData.getInstance().addTransaction(initBlockRewardTransaction,true);
             }
             blockchainStmt.close();
             blockchainConnection.close();
@@ -126,7 +126,7 @@ public class ECoin extends Application {
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
         }
-        BlockData.getInstance().loadBlockChain();
+        BlockchainData.getInstance().loadBlockChain();
     }
 }
 
