@@ -25,7 +25,7 @@ public class ECoin extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         new UI().start(primaryStage);
-        new PeerClient(6001).start();
+        new PeerClient().start();
         new PeerServer(6000).start();
         new MiningThread().start();
     }

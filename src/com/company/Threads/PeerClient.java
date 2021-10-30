@@ -16,9 +16,9 @@ public class PeerClient extends Thread {
 
     private Queue<Integer> queue = new ConcurrentLinkedQueue<>();
 
-    public PeerClient(Integer port) {
-        this.queue.add(port);
-        this.queue.add(6000);
+    public PeerClient() {
+        this.queue.add(6001);
+        this.queue.add(6002);
     }
 
     @Override
