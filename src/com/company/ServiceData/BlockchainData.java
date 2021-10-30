@@ -299,8 +299,9 @@ public class BlockchainData {
                 } else if ((lastMinedLocalBlock + 65) < LocalDateTime.now().toEpochSecond(ZoneOffset.UTC) && (lastMinedRcvdBlock + 65) >= LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)) {
                     //we reset the mining points since we weren't contributing until now.
                     setMiningPoints(0);
-                    setCurrentBlockChain(recievedBC);
                     addReceivedBlockChainToDB(recievedBC);
+                    setCurrentBlockChain(new LinkedList<>());
+                    loadBlockChain();
                     System.out.println("received blockchain won!, local BC was old");
                     //If received one is old but local is new send ours to them
                 } else if ((lastMinedLocalBlock + 65) > LocalDateTime.now().toEpochSecond(ZoneOffset.UTC) && (lastMinedRcvdBlock + 65) < LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)) {
@@ -313,8 +314,9 @@ public class BlockchainData {
                     if (initRcvBlockTime < initLocalBlockTIme) {
                         //we reset the mining points since we weren't contributing until now.
                         setMiningPoints(0);
-                        setCurrentBlockChain(recievedBC);
                         addReceivedBlockChainToDB(recievedBC);
+                        setCurrentBlockChain(new LinkedList<>());
+                        loadBlockChain();
                         System.out.println("PeerClient blockchain won!, PeerServer's BC was old");
                     } else if (initLocalBlockTIme < initRcvBlockTime) {
                         return getCurrentBlockChain();
@@ -338,8 +340,9 @@ public class BlockchainData {
                                 recievedBC.getLast().getTransactionLedger().sort(transactionComparator);
                                 //we are returning the mining points since our local block lost.
                                 setMiningPoints(BlockchainData.getInstance().getMiningPoints() + getCurrentBlockChain().getLast().getMiningPoints());
-                                setCurrentBlockChain(recievedBC);
                                 addReceivedBlockChainToDB(recievedBC);
+                                setCurrentBlockChain(new LinkedList<>());
+                                loadBlockChain();
                                 System.out.println("Received blockchain won!");
                             } else {
                                 //remove the reward transaction from the losing block and transfer the transactions to our winning block
