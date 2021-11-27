@@ -14,7 +14,7 @@ public class Transaction implements Serializable {
    private byte[] from;
    private byte[] to;
    private Integer value;
-   private String timeStamp;
+   private String timestamp;
    private byte[] signature;
    private Integer ledgerId;
 
@@ -27,7 +27,7 @@ public class Transaction implements Serializable {
       this.value = value;
       this.signature = signature;
       this.ledgerId = ledgerId;
-      this.timeStamp = timeStamp;
+      this.timestamp = timeStamp;
    }
    //Constructor for creating a new transaction and signing it.
    public Transaction (Wallet fromWallet, byte[] toAddress, Integer value, Integer ledgerId,
@@ -36,18 +36,18 @@ public class Transaction implements Serializable {
       this.to = toAddress;
       this.value = value;
       this.ledgerId = ledgerId;
-      this.timeStamp = LocalDateTime.now().toString();
+      this.timestamp = LocalDateTime.now().toString();
       signing.initSign(fromWallet.getPrivateKey());
       String sr = this.toString();
       signing.update(sr.getBytes());
       this.signature = signing.sign();
    }
 
-   public Boolean isVerified(Transaction transaction, Signature signing)
+   public Boolean isVerified(Signature signing)
            throws InvalidKeyException, SignatureException {
-      signing.initVerify(new DSAPublicKeyImpl(transaction.getFrom()));
-      signing.update(transaction.toString().getBytes());
-      return signing.verify(signature);
+      signing.initVerify(new DSAPublicKeyImpl(this.getFrom()));
+      signing.update(this.toString().getBytes());
+      return signing.verify(this.signature);
    }
 
    @Override
@@ -56,7 +56,7 @@ public class Transaction implements Serializable {
               "from=" + Arrays.toString(from) +
               ", to=" + Arrays.toString(to) +
               ", value=" + value +
-              ", timeStamp= " + timeStamp +
+              ", timeStamp= " + timestamp +
               ", ledgerId=" + ledgerId +
               '}';
    }
@@ -74,8 +74,8 @@ public class Transaction implements Serializable {
    public Integer getLedgerId() { return ledgerId; }
    public void setLedgerId(Integer ledgerId) { this.ledgerId = ledgerId; }
 
-   public String getTimeStamp() {
-      return timeStamp;
+   public String getTimestamp() {
+      return timestamp;
    }
 
    @Override
