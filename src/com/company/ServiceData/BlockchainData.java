@@ -2,7 +2,6 @@ package com.company.ServiceData;
 
 import com.company.Model.Block;
 import com.company.Model.Transaction;
-import com.company.Model.TransactionFX;
 import com.company.Model.Wallet;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,11 +18,10 @@ import java.util.LinkedList;
 
 public class BlockchainData {
 
-    private ObservableList<TransactionFX> newBlockTransactionsFX;
+    private ObservableList<Transaction> newBlockTransactionsFX;
     private ObservableList<Transaction> newBlockTransactions;
     private LinkedList<Block> currentBlockChain = new LinkedList<>();
     private Block latestBlock;
-    private String walletBalance;
     private boolean exit = false;
     private int miningPoints;
     //helper class.
@@ -49,66 +47,21 @@ public class BlockchainData {
         return instance;
     }
 
-    public ObservableList<TransactionFX> getTransactionLedgerFX() {
+    Comparator<Transaction> transactionComparator = Comparator.comparing(Transaction::getTimestamp);
+    public ObservableList<Transaction> getTransactionLedgerFX() {
         newBlockTransactionsFX.clear();
         newBlockTransactions.sort(transactionComparator);
-        for (Transaction transaction : newBlockTransactions) {
-            newBlockTransactionsFX.add(new TransactionFX(transaction));
-        }
+        newBlockTransactionsFX.addAll(newBlockTransactions);
         return FXCollections.observableArrayList(newBlockTransactionsFX);
     }
 
     public String getWalletBallanceFX() {
-        walletBalance = getBalance(currentBlockChain, newBlockTransactions, WalletData.getInstance().getWallet().getPublicKey()).toString();
-        return walletBalance;
+        return getBalance(currentBlockChain, newBlockTransactions,
+                WalletData.getInstance().getWallet().getPublicKey()).toString();
     }
 
-    public void verifyBlockChain(LinkedList<Block> currentBlockChain) throws GeneralSecurityException {
-        for (Block block : currentBlockChain) {
-            if (!block.isVerified(signing)) {
-                throw new GeneralSecurityException("Block validation failed");
-            }
-            ArrayList<Transaction> transactions = block.getTransactionLedger();
-//            transactions.sort(transactionComparator);
-            for (Transaction transaction : transactions) {
-                if (!transaction.isVerified(transaction, signing)) {
-                    throw new GeneralSecurityException("Transaction validation failed");
-                }
-            }
-        }
-    }
-
-    public void addTransaction(Transaction transaction, boolean blockReward) throws GeneralSecurityException {
-        try {
-            if (getBalance(currentBlockChain, newBlockTransactions, new DSAPublicKeyImpl(transaction.getFrom())) < transaction.getValue() && !blockReward) {
-                throw new GeneralSecurityException("Not enough funds by sender to record transaction");
-            } else {
-                newBlockTransactions.add(transaction);
-                newBlockTransactions.sort(transactionComparator);
-                Connection connection = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\blockchain.db");
-
-                PreparedStatement pstmt;
-                pstmt = connection.prepareStatement("INSERT INTO TRANSACTIONS(\"FROM\", \"TO\", LEDGER_ID, VALUE, SIGNATURE, CREATED_ON) " +
-                        " VALUES (?,?,?,?,?,?) ");
-                pstmt.setBytes(1, transaction.getFrom());
-                pstmt.setBytes(2, transaction.getTo());
-                pstmt.setInt(3, transaction.getLedgerId());
-                pstmt.setInt(4, transaction.getValue());
-                pstmt.setBytes(5, transaction.getSignature());
-                pstmt.setString(6, transaction.getTimeStamp());
-                pstmt.executeUpdate();
-
-                pstmt.close();
-                connection.close();
-            }
-        } catch (SQLException e) {
-            System.out.println("Problem with DB: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-    }
-
-    private Integer getBalance(LinkedList<Block> blockChain, ObservableList<Transaction> currentLedger, PublicKey walletAddress) {
+    private Integer getBalance(LinkedList<Block> blockChain,
+                               ObservableList<Transaction> currentLedger, PublicKey walletAddress) {
         Integer balance = 0;
         for (Block block : blockChain) {
             for (Transaction transaction : block.getTransactionLedger()) {
@@ -126,6 +79,53 @@ public class BlockchainData {
             }
         }
         return balance;
+    }
+
+    private void verifyBlockChain(LinkedList<Block> currentBlockChain) throws GeneralSecurityException {
+        for (Block block : currentBlockChain) {
+            if (!block.isVerified(signing)) {
+                throw new GeneralSecurityException("Block validation failed");
+            }
+            ArrayList<Transaction> transactions = block.getTransactionLedger();
+            for (Transaction transaction : transactions) {
+                if (!transaction.isVerified(signing)) {
+                    throw new GeneralSecurityException("Transaction validation failed");
+                }
+            }
+        }
+    }
+
+    public void addTransaction(Transaction transaction, boolean blockReward) throws GeneralSecurityException {
+        try {
+            if (getBalance(currentBlockChain, newBlockTransactions,
+                    new DSAPublicKeyImpl(transaction.getFrom())) < transaction.getValue() && !blockReward) {
+                throw new GeneralSecurityException("Not enough funds by sender to record transaction");
+            } else {
+                newBlockTransactions.add(transaction);
+                newBlockTransactions.sort(transactionComparator);
+                Connection connection = DriverManager.getConnection
+                        ("jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\blockchain.db");
+
+                PreparedStatement pstmt;
+                pstmt = connection.prepareStatement("INSERT INTO TRANSACTIONS" +
+                        "(\"FROM\", \"TO\", LEDGER_ID, VALUE, SIGNATURE, CREATED_ON) " +
+                        " VALUES (?,?,?,?,?,?) ");
+                pstmt.setBytes(1, transaction.getFrom());
+                pstmt.setBytes(2, transaction.getTo());
+                pstmt.setInt(3, transaction.getLedgerId());
+                pstmt.setInt(4, transaction.getValue());
+                pstmt.setBytes(5, transaction.getSignature());
+                pstmt.setString(6, transaction.getTimestamp());
+                pstmt.executeUpdate();
+
+                pstmt.close();
+                connection.close();
+            }
+        } catch (SQLException e) {
+            System.out.println("Problem with DB: " + e.getMessage());
+            e.printStackTrace();
+        }
+
     }
 
     public void loadBlockChain() {
@@ -216,7 +216,7 @@ public class BlockchainData {
             if (latestBlock.getLedgerId() == 1) {
                 continue;
             }
-            if (trans.isVerified(trans, signing) && getBalance(currentBlockChain, FXCollections.observableArrayList(latestBlock.getTransactionLedger()), new DSAPublicKeyImpl(trans.getFrom())) >= 0 || rewardTransaction) {
+            if (trans.isVerified(signing) && getBalance(currentBlockChain, FXCollections.observableArrayList(latestBlock.getTransactionLedger()), new DSAPublicKeyImpl(trans.getFrom())) >= 0 || rewardTransaction) {
                 latestBlock.setCurrHash((Arrays.toString(latestBlock.getPrevHash()) + Arrays.toString(trans.getSignature())).getBytes());
                 rewardTransaction = false;
             } else {
@@ -330,7 +330,7 @@ public class BlockchainData {
                             if (recievedBC.getLast().getMiningPoints() > getCurrentBlockChain().getLast().getMiningPoints() ||
                                     recievedBC.getLast().getMiningPoints().equals(getCurrentBlockChain().getLast().getMiningPoints()) &&
                                             recievedBC.getLast().getLuck() > getCurrentBlockChain().getLast().getLuck()) {
-                                //remove the reward transaction from the losing block and transfer the transactions to the winning block
+                                //remove the reward transaction from our losing block and transfer the transactions to the winning block
                                 getCurrentBlockChain().getLast().getTransactionLedger().remove(0);
                                 for (Transaction transaction : getCurrentBlockChain().getLast().getTransactionLedger()) {
                                     if (!recievedBC.getLast().getTransactionLedger().contains(transaction)) {
@@ -345,7 +345,7 @@ public class BlockchainData {
                                 loadBlockChain();
                                 System.out.println("Received blockchain won!");
                             } else {
-                                //remove the reward transaction from the losing block and transfer the transactions to our winning block
+                                //remove the reward transaction from their losing block and transfer the transactions to our winning block
                                 recievedBC.getLast().getTransactionLedger().remove(0);
                                 for (Transaction transaction : recievedBC.getLast().getTransactionLedger()) {
                                     if (!getCurrentBlockChain().getLast().getTransactionLedger().contains(transaction)) {
@@ -402,8 +402,6 @@ public class BlockchainData {
     public void setMiningPoints(int miningPoints) {
         this.miningPoints = miningPoints;
     }
-
-    Comparator<Transaction> transactionComparator = Comparator.comparing(Transaction::getTimeStamp);
 
     public boolean isExit() {
         return exit;

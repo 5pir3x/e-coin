@@ -1,6 +1,6 @@
 package com.company.Controller;
 
-import com.company.Model.TransactionFX;
+import com.company.Model.Transaction;
 import com.company.ServiceData.BlockchainData;
 import com.company.ServiceData.WalletData;
 import javafx.application.Platform;
@@ -17,17 +17,17 @@ import java.util.Optional;
 public class MainWindowController {
 
     @FXML
-    public TableView<TransactionFX> tableview = new TableView<>(); //this is read-only UI table
+    public TableView<Transaction> tableview = new TableView<>(); //this is read-only UI table
     @FXML
-    private TableColumn<TransactionFX, String> from;
+    private TableColumn<Transaction, String> from;
     @FXML
-    private TableColumn<TransactionFX, String> to;
+    private TableColumn<Transaction, String> to;
     @FXML
-    private TableColumn<TransactionFX, Integer> value;
+    private TableColumn<Transaction, Integer> value;
     @FXML
-    private TableColumn<TransactionFX, String> timestamp;
+    private TableColumn<Transaction, String> timestamp;
     @FXML
-    private TableColumn<TransactionFX, String> signature;
+    private TableColumn<Transaction, String> signature;
     @FXML
     private BorderPane borderPane;
     @FXML

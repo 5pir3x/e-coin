@@ -2,7 +2,6 @@ package com.company.ServiceData;
 
 import com.company.Model.Wallet;
 
-import java.io.Serializable;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -12,7 +11,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.sql.*;
 
-public class WalletData implements Serializable {
+public class WalletData {
 
     private Wallet wallet;
     //singleton class
@@ -28,7 +27,8 @@ public class WalletData implements Serializable {
 
     //This will load your wallet from the database.
     public void loadWallet() throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException {
-        Connection walletConnection = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\wallet.db");
+        Connection walletConnection = DriverManager.getConnection(
+                "jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\wallet.db");
         Statement walletStatment = walletConnection.createStatement();
         ResultSet resultSet;
         resultSet = walletStatment.executeQuery(" SELECT * FROM WALLET ");
