@@ -130,13 +130,12 @@ public class BlockchainData {
 
     public void loadBlockChain() {
         try {
-            Connection connection = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\blockchain.db");
+            Connection connection = DriverManager.getConnection
+                    ("jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\blockchain.db");
             Statement stmt = connection.createStatement();
             ResultSet resultSet = stmt.executeQuery(" SELECT * FROM BLOCKCHAIN ");
-            ArrayList<Transaction> transactionLedger = new ArrayList<>();
             while (resultSet.next()) {
-                transactionLedger = loadTransactionLedger(resultSet.getInt("LEDGER_ID"));
-                currentBlockChain.add(new Block(
+                this.currentBlockChain.add(new Block(
                         resultSet.getBytes("PREVIOUS_HASH"),
                         resultSet.getBytes("CURRENT_HASH"),
                         resultSet.getString("CREATED_ON"),
@@ -144,16 +143,16 @@ public class BlockchainData {
                         resultSet.getInt("LEDGER_ID"),
                         resultSet.getInt("MINING_POINTS"),
                         resultSet.getDouble("LUCK"),
-                        transactionLedger
+                        loadTransactionLedger(resultSet.getInt("LEDGER_ID"))
                 ));
             }
 
             latestBlock = currentBlockChain.getLast();
-            Transaction transaction = new Transaction(new Wallet(), WalletData.getInstance().getWallet().getPublicKey().getEncoded(),
+            Transaction transaction = new Transaction(new Wallet(),
+                    WalletData.getInstance().getWallet().getPublicKey().getEncoded(),
                     100, latestBlock.getLedgerId() + 1, signing);
             newBlockTransactions.clear();
-            newBlockTransactions.addAll(transaction);
-            newBlockTransactions.sort(transactionComparator);
+            newBlockTransactions.add(transaction);
             verifyBlockChain(currentBlockChain);
             resultSet.close();
             stmt.close();
@@ -169,9 +168,10 @@ public class BlockchainData {
     private ArrayList<Transaction> loadTransactionLedger(Integer ledgerID) throws SQLException {
         ArrayList<Transaction> transactions = new ArrayList<>();
         try {
-            Connection connection = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\blockchain.db");
-            PreparedStatement stmt = connection.prepareStatement(" SELECT  * FROM TRANSACTIONS WHERE LEDGER_ID = ?");
-
+            Connection connection = DriverManager.getConnection
+                    ("jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\blockchain.db");
+            PreparedStatement stmt = connection.prepareStatement
+                    (" SELECT  * FROM TRANSACTIONS WHERE LEDGER_ID = ?");
             stmt.setInt(1, ledgerID);
             ResultSet resultSet = stmt.executeQuery();
             while (resultSet.next()) {
@@ -184,14 +184,10 @@ public class BlockchainData {
                         resultSet.getString("CREATED_ON")
                 ));
             }
-            if (transactions.isEmpty()) {
-                Transaction transaction = new Transaction(new Wallet(), WalletData.getInstance().getWallet().getPublicKey().getEncoded(), 100, ledgerID + 1, signing);
-                transactions.add(transaction);
-            }
             resultSet.close();
             stmt.close();
             connection.close();
-        } catch (SQLException | NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return transactions;
@@ -199,7 +195,7 @@ public class BlockchainData {
 
     public void mineBlock() {
         try {
-            finalizeBlock(WalletData.getInstance().getWallet(), new Wallet());
+            finalizeBlock(WalletData.getInstance().getWallet());
             addBlock(latestBlock);
         } catch (SQLException | GeneralSecurityException e) {
             System.out.println("Problem with DB: " + e.getMessage());
@@ -207,7 +203,7 @@ public class BlockchainData {
         }
     }
 
-    private void finalizeBlock(Wallet minersWallet, Wallet blockRewardWallet) throws GeneralSecurityException, SQLException {
+    private void finalizeBlock(Wallet minersWallet) throws GeneralSecurityException, SQLException {
         latestBlock = new Block(BlockchainData.getInstance().currentBlockChain);
         latestBlock.setTransactionLedger(new ArrayList<>(newBlockTransactions));
         latestBlock.setCurrHash(latestBlock.getPrevHash());
@@ -216,8 +212,11 @@ public class BlockchainData {
             if (latestBlock.getLedgerId() == 1) {
                 continue;
             }
-            if (trans.isVerified(signing) && getBalance(currentBlockChain, FXCollections.observableArrayList(latestBlock.getTransactionLedger()), new DSAPublicKeyImpl(trans.getFrom())) >= 0 || rewardTransaction) {
-                latestBlock.setCurrHash((Arrays.toString(latestBlock.getPrevHash()) + Arrays.toString(trans.getSignature())).getBytes());
+            if (trans.isVerified(signing) && getBalance(currentBlockChain,
+                    FXCollections.observableArrayList(latestBlock.getTransactionLedger()),
+                    new DSAPublicKeyImpl(trans.getFrom())) >= 0 || rewardTransaction) {
+                latestBlock.setCurrHash((Arrays.toString(latestBlock.getPrevHash()) +
+                        Arrays.toString(trans.getSignature())).getBytes());
                 rewardTransaction = false;
             } else {
                 throw new GeneralSecurityException("Block transactions validation failed");
@@ -233,17 +232,20 @@ public class BlockchainData {
         miningPoints = 0;
         //Reward transaction
         addTransaction(latestBlock.getTransactionLedger().get(0), true);
-        Transaction transaction = new Transaction(blockRewardWallet, minersWallet.getPublicKey().getEncoded(), 100, latestBlock.getLedgerId() + 1, signing);
+        Transaction transaction = new Transaction(new Wallet(), minersWallet.getPublicKey().getEncoded(),
+                100, latestBlock.getLedgerId() + 1, signing);
         newBlockTransactions.clear();
         newBlockTransactions.add(transaction);
     }
 
     private void addBlock(Block block) {
         try {
-            Connection connection = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\blockchain.db");
+            Connection connection = DriverManager.getConnection
+                    ("jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\blockchain.db");
             PreparedStatement pstmt;
-            pstmt = connection.prepareStatement("INSERT INTO BLOCKCHAIN(PREVIOUS_HASH, CURRENT_HASH , LEDGER_ID, CREATED_ON, CREATED_BY,MINING_POINTS,LUCK ) " +
-                    " VALUES (?,?,?,?,?,?,?) ");
+            pstmt = connection.prepareStatement
+                    ("INSERT INTO BLOCKCHAIN(PREVIOUS_HASH, CURRENT_HASH, LEDGER_ID, CREATED_ON," +
+                            " CREATED_BY, MINING_POINTS, LUCK) VALUES (?,?,?,?,?,?,?) ");
             pstmt.setBytes(1, block.getPrevHash());
             pstmt.setBytes(2, block.getCurrHash());
             pstmt.setInt(3, block.getLedgerId());
