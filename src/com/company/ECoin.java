@@ -3,12 +3,12 @@ package com.company;
 import com.company.Model.Block;
 import com.company.Model.Transaction;
 import com.company.Model.Wallet;
+import com.company.ServiceData.BlockchainData;
+import com.company.ServiceData.WalletData;
 import com.company.Threads.MiningThread;
 import com.company.Threads.PeerClient;
 import com.company.Threads.PeerServer;
 import com.company.Threads.UI;
-import com.company.ServiceData.BlockchainData;
-import com.company.ServiceData.WalletData;
 import javafx.application.Application;
 import javafx.stage.Stage;
 

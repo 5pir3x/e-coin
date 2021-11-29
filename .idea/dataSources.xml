@@ -13,5 +13,11 @@
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
       <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/db/wallet.db</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="blockchain" uuid="8968c403-8d44-4d58-ac6b-26c2caf639c4">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:C:\Users\spiro\IdeaProjects\e-coin\db\blockchain.db</jdbc-url>
+    </data-source>
   </component>
 </project>

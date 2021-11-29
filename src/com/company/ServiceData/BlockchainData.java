@@ -206,22 +206,6 @@ public class BlockchainData {
     private void finalizeBlock(Wallet minersWallet) throws GeneralSecurityException, SQLException {
         latestBlock = new Block(BlockchainData.getInstance().currentBlockChain);
         latestBlock.setTransactionLedger(new ArrayList<>(newBlockTransactions));
-        latestBlock.setCurrHash(latestBlock.getPrevHash());
-        boolean rewardTransaction = true;
-        for (Transaction trans : latestBlock.getTransactionLedger()) {
-            if (latestBlock.getLedgerId() == 1) {
-                continue;
-            }
-            if (trans.isVerified(signing) && getBalance(currentBlockChain,
-                    FXCollections.observableArrayList(latestBlock.getTransactionLedger()),
-                    new DSAPublicKeyImpl(trans.getFrom())) >= 0 || rewardTransaction) {
-                latestBlock.setCurrHash((Arrays.toString(latestBlock.getPrevHash()) +
-                        Arrays.toString(trans.getSignature())).getBytes());
-                rewardTransaction = false;
-            } else {
-                throw new GeneralSecurityException("Block transactions validation failed");
-            }
-        }
         latestBlock.setTimeStamp(LocalDateTime.now().toString());
         latestBlock.setMinedBy(minersWallet.getPublicKey().getEncoded());
         latestBlock.setMiningPoints(miningPoints);
