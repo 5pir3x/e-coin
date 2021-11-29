@@ -38,13 +38,13 @@ public class MainWindowController {
     public void initialize() {
         Base64.Encoder encoder = Base64.getEncoder();
         from.setCellValueFactory(
-                new PropertyValueFactory<>("from"));
+                new PropertyValueFactory<>("fromFX"));
         to.setCellValueFactory(
-                new PropertyValueFactory<>("to"));
+                new PropertyValueFactory<>("toFX"));
         value.setCellValueFactory(
                 new PropertyValueFactory<>("value"));
         signature.setCellValueFactory(
-                new PropertyValueFactory<>("signature"));
+                new PropertyValueFactory<>("signatureFX"));
         timestamp.setCellValueFactory(
                 new PropertyValueFactory<>("timestamp"));
         eCoins.setText(BlockchainData.getInstance().getWalletBallanceFX());

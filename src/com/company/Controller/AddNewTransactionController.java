@@ -24,7 +24,7 @@ public class AddNewTransactionController {
         Integer ledgerId = BlockchainData.getInstance().getTransactionLedgerFX().get(0).getLedgerId();
         byte[] sendB = decoder.decode(toAddress.getText());
         Transaction transaction = new Transaction(WalletData.getInstance()
-                .getWallet(),sendB ,Integer.parseInt(value.getText()), ledgerId, signing );
+                .getWallet(),sendB ,Integer.parseInt(value.getText()), ledgerId, signing);
         BlockchainData.getInstance().addTransaction(transaction,false);
     }
 }
