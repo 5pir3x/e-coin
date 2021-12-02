@@ -26,6 +26,7 @@ public class MiningThread extends Thread {
                     .getCurrentBlockChain().getLast().getTimeStamp()).toEpochSecond(ZoneOffset.UTC));
             try {
                 Thread.sleep(2000);
+                if (BlockchainData.getInstance().isExit()) { break; }
                 BlockchainData.getInstance().setMiningPoints(BlockchainData.getInstance().getMiningPoints() + 2);
             } catch (InterruptedException e) {
                 e.printStackTrace();

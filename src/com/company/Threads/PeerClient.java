@@ -36,6 +36,8 @@ public class PeerClient extends Thread {
                 objectOutput.writeObject(blockChain);
 
                 LinkedList<Block> returnedBlockchain = (LinkedList<Block>) objectInput.readObject();
+                System.out.println(" RETURNED BC LedgerId = " + returnedBlockchain.getLast().getLedgerId()  +
+                        " Size= " + returnedBlockchain.getLast().getTransactionLedger().size());
                 BlockchainData.getInstance().getBlockchainConsensus(returnedBlockchain);
                 Thread.sleep(2000);
 
