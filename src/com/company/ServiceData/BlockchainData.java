@@ -291,8 +291,6 @@ public class BlockchainData {
                     } else {
                         if (compareMiningPointsAndLuck(receivedBC) != null) {
                             return getCurrentBlockChain();
-                        } else {
-                            System.out.println("blockchains mismatch");
                         }
                     }
                 }
