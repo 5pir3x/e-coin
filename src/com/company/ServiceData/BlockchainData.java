@@ -325,6 +325,7 @@ public class BlockchainData {
         }
         receivedBC.getLast().getTransactionLedger().sort(transactionComparator);
     }
+
     private LinkedList<Block> checkIfOutdated(LinkedList<Block> receivedBC) {
         //Check how old the blockchains are.
         long lastMinedLocalBlock = LocalDateTime.parse
@@ -347,13 +348,14 @@ public class BlockchainData {
             //If received one is old but local is new send ours to them
         } else if ((lastMinedLocalBlock + TIMEOUT_INTERVAL) > LocalDateTime.now().toEpochSecond(ZoneOffset.UTC) &&
                 (lastMinedRcvdBlock + TIMEOUT_INTERVAL) < LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)) {
-            //we reset the mining points since we weren't contributing until now.
+
             return getCurrentBlockChain();
         }
         return null;
     }
+
     private LinkedList<Block> checkWhichIsCreatedFirst(LinkedList<Block> receivedBC) {
-        //Compare timestamps to see which one is older
+        //Compare timestamps to see which one is created first.
         long initRcvBlockTime = LocalDateTime.parse(receivedBC.getFirst().getTimeStamp())
                 .toEpochSecond(ZoneOffset.UTC);
         long initLocalBlockTIme = LocalDateTime.parse(getCurrentBlockChain().getFirst()
@@ -370,7 +372,9 @@ public class BlockchainData {
         }
         return null;
     }
-    private LinkedList<Block> compareMiningPointsAndLuck(LinkedList<Block> receivedBC) throws GeneralSecurityException {
+
+    private LinkedList<Block> compareMiningPointsAndLuck(LinkedList<Block> receivedBC)
+            throws GeneralSecurityException {
         //check if both blockchains have the same prevHashes to confirm they are both
         //contending to mine the last block
         //if they are the same compare the mining points and luck in case of equal mining points
