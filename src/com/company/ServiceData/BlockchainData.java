@@ -284,12 +284,16 @@ public class BlockchainData {
             verifyBlockChain(receivedBC);
             //Check if we have received an identical blockchain.
             if (!Arrays.equals(receivedBC.getLast().getCurrHash(), getCurrentBlockChain().getLast().getCurrHash())) {
-                if (checkIfOutdated(receivedBC) != null) {
+                if (isCurrentBlockChainOutOfDate(receivedBC)) {
+                    updateCurrentBlockchain(receivedBC);
                     return getCurrentBlockChain();
                 } else {
-                    if (checkWhichIsCreatedFirst(receivedBC) != null) {
+                    int comparationResult = compareCreationTimeWithCurrentBlockchain(receivedBC);
+                    if (comparationResult > 0) {
+                        updateCurrentBlockchain(receivedBC);
                         return getCurrentBlockChain();
-                    } else {
+                    } else  if (comparationResult == 0) {
+                        // TODO: Update this statement as well
                         if (compareMiningPointsAndLuck(receivedBC) != null) {
                             return getCurrentBlockChain();
                         }
@@ -327,7 +331,7 @@ public class BlockchainData {
         receivedBC.getLast().getTransactionLedger().sort(transactionComparator);
     }
 
-    private LinkedList<Block> checkIfOutdated(LinkedList<Block> receivedBC) {
+    private boolean isCurrentBlockChainOutOfDate(LinkedList<Block> receivedBC) {
         //Check how old the blockchains are.
         long lastMinedLocalBlock = LocalDateTime.parse
                 (getCurrentBlockChain().getLast().getTimeStamp()).toEpochSecond(ZoneOffset.UTC);
@@ -337,41 +341,44 @@ public class BlockchainData {
         if ((lastMinedLocalBlock + TIMEOUT_INTERVAL) < LocalDateTime.now().toEpochSecond(ZoneOffset.UTC) &&
                 (lastMinedRcvdBlock + TIMEOUT_INTERVAL) < LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)) {
             System.out.println("both are old check other peers");
+            return true;
             //If your blockchain is old but the received one is new use the received one
         } else if ((lastMinedLocalBlock + TIMEOUT_INTERVAL) < LocalDateTime.now().toEpochSecond(ZoneOffset.UTC) &&
                 (lastMinedRcvdBlock + TIMEOUT_INTERVAL) >= LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)) {
-            //we reset the mining points since we weren't contributing until now.
-            setMiningPoints(0);
-            addReceivedBlockChainToDB(receivedBC);
-            setCurrentBlockChain(new LinkedList<>());
-            loadBlockChain();
-            System.out.println("received blockchain won!, local BC was old");
+            return true;
             //If received one is old but local is new send ours to them
         } else if ((lastMinedLocalBlock + TIMEOUT_INTERVAL) > LocalDateTime.now().toEpochSecond(ZoneOffset.UTC) &&
                 (lastMinedRcvdBlock + TIMEOUT_INTERVAL) < LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)) {
-
-            return getCurrentBlockChain();
+            return false;
         }
-        return null;
+
+        return true;
     }
 
-    private LinkedList<Block> checkWhichIsCreatedFirst(LinkedList<Block> receivedBC) {
-        //Compare timestamps to see which one is created first.
+    /**
+     * Compares the creation time of the current blockchain with the received blockchain.
+     *
+     * @param receivedBC
+     * @return -1 if the current blockchain is created before the received blockchain,
+     *          0 if they are created at the same time
+     *          1 if the current blockchain is created after the received blockchain
+     */
+    private int compareCreationTimeWithCurrentBlockchain(LinkedList<Block> receivedBC) {
         long initRcvBlockTime = LocalDateTime.parse(receivedBC.getFirst().getTimeStamp())
                 .toEpochSecond(ZoneOffset.UTC);
-        long initLocalBlockTIme = LocalDateTime.parse(getCurrentBlockChain().getFirst()
+        long initLocalBlockTime = LocalDateTime.parse(getCurrentBlockChain().getFirst()
                 .getTimeStamp()).toEpochSecond(ZoneOffset.UTC);
-        if (initRcvBlockTime < initLocalBlockTIme) {
-            //we reset the mining points since we weren't contributing until now.
-            setMiningPoints(0);
-            addReceivedBlockChainToDB(receivedBC);
-            setCurrentBlockChain(new LinkedList<>());
-            loadBlockChain();
-            System.out.println("PeerClient blockchain won!, PeerServer's BC was old");
-        } else if (initLocalBlockTIme < initRcvBlockTime) {
-            return getCurrentBlockChain();
-        }
-        return null;
+
+        return initLocalBlockTime == initRcvBlockTime ? 0 : initLocalBlockTime < initRcvBlockTime ? -1 : 1;
+    }
+
+    private void updateCurrentBlockchain(LinkedList<Block> receivedBC) {
+        // We reset the mining points since we weren't contributing until now.
+        setMiningPoints(0);
+        addReceivedBlockChainToDB(receivedBC);
+        setCurrentBlockChain(new LinkedList<>());
+        loadBlockChain();
+        System.out.println("Received blockchain won!, local BC was old");
     }
 
     private LinkedList<Block> compareMiningPointsAndLuck(LinkedList<Block> receivedBC)
