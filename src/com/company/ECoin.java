@@ -16,6 +16,9 @@ import java.security.*;
 import java.sql.*;
 import java.time.LocalDateTime;
 
+import static com.company.Constants.BLOCKCHAIN_DB_CONNECTION;
+import static com.company.Constants.WALLET_DB_CONNECTION;
+
 public class ECoin extends Application {
 
     public static void main(String[] args) {
@@ -36,7 +39,7 @@ public class ECoin extends Application {
             //This creates your wallet if there is none and gives you a KeyPair.
             //We will create it in separate db for better security and ease of portability.
             Connection walletConnection = DriverManager
-                    .getConnection("jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\wallet.db");
+                    .getConnection(WALLET_DB_CONNECTION);
             Statement walletStatment = walletConnection.createStatement();
             walletStatment.executeUpdate("CREATE TABLE IF NOT EXISTS WALLET ( " +
                     " PRIVATE_KEY BLOB NOT NULL UNIQUE, " +
@@ -63,7 +66,7 @@ public class ECoin extends Application {
 
 //          This will create the db tables with columns for the Blockchain.
             Connection blockchainConnection = DriverManager
-                    .getConnection("jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\blockchain.db");
+                    .getConnection(BLOCKCHAIN_DB_CONNECTION);
             Statement blockchainStmt = blockchainConnection.createStatement();
             blockchainStmt.executeUpdate("CREATE TABLE IF NOT EXISTS BLOCKCHAIN ( " +
                     " ID INTEGER NOT NULL UNIQUE, " +

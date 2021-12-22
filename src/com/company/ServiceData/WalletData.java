@@ -1,5 +1,6 @@
 package com.company.ServiceData;
 
+import com.company.Constants;
 import com.company.Model.Wallet;
 
 import java.security.KeyFactory;
@@ -28,7 +29,7 @@ public class WalletData {
     //This will load your wallet from the database.
     public void loadWallet() throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException {
         Connection walletConnection = DriverManager.getConnection(
-                "jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\wallet.db");
+                Constants.WALLET_DB_CONNECTION);
         Statement walletStatment = walletConnection.createStatement();
         ResultSet resultSet;
         resultSet = walletStatment.executeQuery(" SELECT * FROM WALLET ");
