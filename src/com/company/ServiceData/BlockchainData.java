@@ -107,8 +107,6 @@ public class BlockchainData {
                     new DSAPublicKeyImpl(transaction.getFrom())) < transaction.getValue() && !blockReward) {
                 throw new GeneralSecurityException("Not enough funds by sender to record transaction");
             } else {
-//                newBlockTransactions.add(transaction);
-//                newBlockTransactions.sort(transactionComparator);
                 Connection connection = DriverManager.getConnection
                         ("jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\blockchain.db");
 
@@ -253,7 +251,7 @@ public class BlockchainData {
         }
     }
 
-    private void addReceivedBlockChainToDB(LinkedList<Block> receivedBC) {
+    private void replaceBlockchainInDatabase(LinkedList<Block> receivedBC) {
         try {
             Connection connection = DriverManager.getConnection
                     ("jdbc:sqlite:C:\\Users\\spiro\\IdeaProjects\\e-coin\\db\\blockchain.db");
@@ -341,7 +339,7 @@ public class BlockchainData {
                 (lastMinedRcvdBlock + TIMEOUT_INTERVAL) >= LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)) {
             //we reset the mining points since we weren't contributing until now.
             setMiningPoints(0);
-            addReceivedBlockChainToDB(receivedBC);
+            replaceBlockchainInDatabase(receivedBC);
             setCurrentBlockChain(new LinkedList<>());
             loadBlockChain();
             System.out.println("received blockchain won!, local BC was old");
@@ -363,7 +361,7 @@ public class BlockchainData {
         if (initRcvBlockTime < initLocalBlockTIme) {
             //we reset the mining points since we weren't contributing until now.
             setMiningPoints(0);
-            addReceivedBlockChainToDB(receivedBC);
+            replaceBlockchainInDatabase(receivedBC);
             setCurrentBlockChain(new LinkedList<>());
             loadBlockChain();
             System.out.println("PeerClient blockchain won!, PeerServer's BC was old");
@@ -398,7 +396,7 @@ public class BlockchainData {
                 //we are returning the mining points since our local block lost.
                 setMiningPoints(BlockchainData.getInstance().getMiningPoints() +
                         getCurrentBlockChain().getLast().getMiningPoints());
-                addReceivedBlockChainToDB(receivedBC);
+                replaceBlockchainInDatabase(receivedBC);
                 setCurrentBlockChain(new LinkedList<>());
                 loadBlockChain();
                 System.out.println("Received blockchain won!");
