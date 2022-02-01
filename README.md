@@ -9,4 +9,4 @@ If you want to run multiple peers:
 2. Make sure they don't share database connection filepaths.
 3. Change local peer port and peer client ports for each copy accordingly. (They are hard coded in the code)
 
-For More info check out Chapter 7 of Introducing Blockchain with Java: Program, Implement, and Extend Blockchains with Java 1st ed. Edition
+For More info check out [Chapter 7 of Introducing Blockchain with Java: Program, Implement, and Extend Blockchains with Java 1st ed. Edition](https://www.amazon.com/Introducing-Blockchain-Java-Implement-Blockchains/dp/1484279263/ref=sr_1_1?qid=1637096107&refinements=p_27%3ASpiro+Buzharovski&s=books&sr=1-1&text=Spiro+Buzharovski)
